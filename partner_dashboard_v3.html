@@ -1,0 +1,2375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner Marketing Intelligence</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #0f0f0d;
+  --surface: #1a1a16;
+  --surface2: #222220;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0ede8;
+  --text2: #8a8780;
+  --text3: #5a5855;
+  --accent: #e8d5a3;
+  --accent2: #c4a96b;
+  --green: #4caf7d;
+  --green-bg: rgba(76,175,125,0.12);
+  --red: #e05c5c;
+  --red-bg: rgba(224,92,92,0.12);
+  --amber: #e8a94a;
+  --amber-bg: rgba(232,169,74,0.12);
+  --blue: #5b9cf6;
+  --blue-bg: rgba(91,156,246,0.12);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167,139,250,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  min-height: 100vh;
+}
+
+/* PASSWORD SCREEN */
+#pw-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.pw-logo {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+
+.pw-box {
+  background: var(--surface);
+  border: 0.5px solid var(--border2);
+  border-radius: 16px;
+  padding: 40px;
+  width: 360px;
+  text-align: center;
+}
+
+.pw-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.pw-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 28px;
+}
+
+.pw-input {
+  width: 100%;
+  background: var(--bg);
+  border: 0.5px solid var(--border2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  outline: none;
+}
+
+.pw-input:focus { border-color: var(--accent2); }
+
+.pw-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #0f0f0d;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+
+.pw-btn:hover { background: var(--accent2); }
+.pw-err { font-size: 12px; color: var(--red); margin-top: 8px; }
+
+/* MAIN LAYOUT */
+#app { display: none; min-height: 100vh; }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-dot {
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.brand-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.refresh-pill {
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 11px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.refresh-pill:hover { border-color: var(--border2); color: var(--text2); }
+
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.nav-tabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+  padding: 0 28px;
+  overflow-x: auto;
+  gap: 0;
+}
+
+.nav-tab {
+  padding: 11px 18px;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 1.5px solid transparent;
+  color: var(--text3);
+  white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.04em;
+  transition: color 0.15s;
+}
+
+.nav-tab:hover { color: var(--text2); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.main { padding: 28px; max-width: 1300px; margin: 0 auto; }
+
+.section { display: none; }
+.section.active { display: block !important; }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.card-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.card-meta { font-size: 11px; color: var(--text3); }
+
+/* METRIC GRID */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+}
+
+.m-label {
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 10px;
+}
+
+.m-value {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 6px;
+}
+
+.m-sub { font-size: 11px; color: var(--text3); }
+
+.m-flag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  margin-top: 6px;
+}
+
+.flag-red { background: var(--red-bg); color: var(--red); }
+.flag-green { background: var(--green-bg); color: var(--green); }
+.flag-amber { background: var(--amber-bg); color: var(--amber); }
+.flag-blue { background: var(--blue-bg); color: var(--blue); }
+
+/* PROGRESS BAR */
+.progress-wrap { margin-bottom: 20px; }
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.progress-label strong { color: var(--text2); }
+.progress-track {
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+.pf-red { background: var(--red); }
+.pf-amber { background: var(--amber); }
+.pf-green { background: var(--green); }
+
+/* ALERTS */
+.alert {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.alert-r { background: var(--red-bg); border: 0.5px solid rgba(224,92,92,0.2); }
+.alert-a { background: var(--amber-bg); border: 0.5px solid rgba(232,169,74,0.2); }
+.alert-g { background: var(--green-bg); border: 0.5px solid rgba(76,175,125,0.2); }
+.alert-b { background: var(--blue-bg); border: 0.5px solid rgba(91,156,246,0.2); }
+.alert-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+.alert-body {}
+.alert-title { font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.alert-detail { color: var(--text3); line-height: 1.5; }
+
+/* TABLES */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 0.5px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 10px 12px;
+  border-bottom: 0.5px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+  font-size: 12px;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.tr-total td { background: var(--surface2); font-weight: 500; color: var(--text2); font-family: 'DM Mono', monospace; }
+
+/* BADGES */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+.b-green { background: var(--green-bg); color: var(--green); }
+.b-red { background: var(--red-bg); color: var(--red); }
+.b-amber { background: var(--amber-bg); color: var(--amber); }
+.b-blue { background: var(--blue-bg); color: var(--blue); }
+.b-purple { background: var(--purple-bg); color: var(--purple); }
+.b-gray { background: var(--surface2); color: var(--text3); }
+
+/* TWO COL */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+/* SECTION DIVIDER */
+.section-divider {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 20px 0 10px;
+  border-bottom: 0.5px solid var(--border);
+  margin-bottom: 14px;
+}
+
+/* FILTER BAR */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-label { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; }
+select {
+  background: var(--surface2);
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text2);
+  font-family: 'DM Mono', monospace;
+  outline: none;
+  cursor: pointer;
+}
+select:hover { border-color: var(--border2); }
+
+/* PARTNER GRID */
+.partner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 12px;
+}
+
+.partner-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.pc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.pc-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.pc-tier {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  margin-top: 2px;
+}
+
+.pc-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 0.5px solid var(--border);
+  font-size: 11px;
+}
+
+.pc-stat:last-of-type { border-bottom: none; }
+.pc-stat-label { color: var(--text3); }
+.pc-stat-value { font-weight: 500; color: var(--text2); font-family: 'DM Mono', monospace; }
+
+.pc-action {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+  border-left: 2px solid var(--accent2);
+}
+
+.pc-action-label {
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 4px;
+}
+
+/* PSM NOTIFICATION */
+.psm-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.psm-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  flex-shrink: 0;
+}
+
+.psm-body { flex: 1; }
+.psm-name { font-weight: 500; color: var(--text); font-size: 13px; margin-bottom: 3px; }
+.psm-detail { font-size: 11px; color: var(--text3); line-height: 1.5; }
+
+/* LOADING */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.loading-spinner {
+  width: 20px; height: 20px;
+  border: 1.5px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* DATA NOTE */
+.data-note {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 0.5px solid var(--border);
+  line-height: 1.5;
+}
+
+/* SCORECARD */
+.scorecard-row {
+  display: grid;
+  grid-template-columns: 140px repeat(6, 1fr);
+  gap: 0;
+  border-bottom: 0.5px solid var(--border);
+  align-items: center;
+}
+
+.scorecard-row:last-child { border-bottom: none; }
+.sc-header { background: var(--surface2); }
+.sc-cell {
+  padding: 10px 12px;
+  font-size: 11px;
+  color: var(--text2);
+}
+.sc-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
+.sc-partner { font-weight: 500; color: var(--text); font-size: 12px; }
+
+/* WIN LOSS */
+.wl-campaign {
+  margin-bottom: 16px;
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.wl-campaign-header {
+  background: var(--surface2);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.wl-campaign-name { font-weight: 500; color: var(--text2); }
+.wl-stats { display: flex; gap: 16px; }
+.wl-stat { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
+.wl-stat span { color: var(--text2); }
+
+.wl-bar {
+  padding: 12px 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.wl-segment {
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 8px;
+}
+
+@media (max-width: 900px) {
+  .metric-grid { grid-template-columns: repeat(2,1fr); }
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .partner-grid { grid-template-columns: 1fr; }
+  .scorecard-row { grid-template-columns: 120px repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD SCREEN -->
+<div id="pw-screen" style="display:none;"></div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-dot"></div>
+      <div class="brand-name">Partner Marketing Intelligence</div>
+    </div>
+    <div class="topbar-right">
+      <div class="refresh-pill" onclick="loadLiveData()">
+        <div class="live-dot"></div>
+        <span id="refresh-label">Refresh live data</span>
+      </div>
+      <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;" id="last-refresh">—</div>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showTab('overview',this)">Overview</div>
+    <div class="nav-tab" onclick="showTab('aws',this)">AWS Pipeline</div>
+    <div class="nav-tab" onclick="showTab('twilio',this)">Twilio Pipeline</div>
+    <div class="nav-tab" onclick="showTab('winloss',this)">Win / Loss</div>
+    <div class="nav-tab" onclick="showTab('scorecard',this)">Partner Scorecard</div>
+    <div class="nav-tab" onclick="showTab('followup',this)">Follow-up Gaps</div>
+    <div class="nav-tab" onclick="showTab('psm',this)">PSM Actions</div>
+    <div class="nav-tab" onclick="showTab('partners',this)">Partner Tracker</div>
+    <div class="nav-tab" onclick="showTab('leaderboard',this)">AE Leaderboard</div>
+    <div class="nav-tab" onclick="showTab('attribution',this)">Attribution Model</div>
+  </div>
+
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div id="tab-overview" class="section active">
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="m-label">AWS total pipeline FY26</div>
+          <div class="m-value">$8.4M</div>
+          <div class="m-sub">53 associated opportunities</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">AWS YTD S2 sourced</div>
+          <div class="m-value">$300K</div>
+          <div class="m-sub">vs $6M FY26 target</div>
+          <div class="m-flag flag-red">5% of target</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Twilio open pipeline</div>
+          <div class="m-value">$275K</div>
+          <div class="m-sub">3 deals · $750K closed won</div>
+        </div>
+        <div class="metric-card" style="cursor:pointer;" onclick="showTab('followup',document.querySelector('[onclick*=followup]'))">
+          <div class="m-label">Leads not being worked</div>
+          <div class="m-value" id="unworked-count">Loading...</div>
+          <div class="m-sub">Responded, not MQL'd, no follow-up</div>
+          <div class="m-flag flag-amber" id="unworked-flag">Click to view full list</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Target vs actual — AWS FY26</div>
+          <div class="card-meta">$6M annual S2 target</div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><strong>S2 sourced ARR</strong><span>$300K of $6M (5%)</span></div>
+          <div class="progress-track"><div class="progress-fill pf-red" style="width:5%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><strong>Early stage pipeline (Discovery)</strong><span>$850K identified</span></div>
+          <div class="progress-track"><div class="progress-fill pf-amber" style="width:14%"></div></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><strong>Total associated pipeline</strong><span>$8.4M across all stages</span></div>
+          <div class="progress-track"><div class="progress-fill pf-green" style="width:100%"></div></div>
+        </div>
+        <div class="data-note">S2 pace at 5% with Q2 underway. $8.4M total associated pipeline exists but most is pre-S2. Acceleration required. AI Launch NYC ($3.1M) and AI Launch SF ($2.5M) have the most S2 conversion potential.</div>
+      </div>
+
+      <div id="live-campaign-section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Live campaign performance</div>
+            <div class="card-meta" id="live-meta">Loading from Snowflake...</div>
+          </div>
+          <div id="live-campaign-content">
+            <div class="loading"><div class="loading-spinner"></div>Querying Snowflake...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider">Priority alerts</div>
+
+      <div class="alert alert-r">
+        <div class="alert-icon">⚑</div>
+        <div class="alert-body">
+          <div class="alert-title">AWS S2 target at 5% — pace is critically behind</div>
+          <div class="alert-detail">$300K of $6M FY26 target reached at S2. Early stage pipeline of $850K in Discovery exists. Campaigns like Clippers vs Thunder Suite (Apr 8) have $475K with 3 opps in active pipeline — these need acceleration to S2.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-a">
+        <div class="alert-icon">!</div>
+        <div class="alert-body">
+          <div class="alert-title">Twilio pipeline effective value is $195K not $275K — Yatra deal expired Sep 2025</div>
+          <div class="alert-detail">Yatra Online ($80K) deal registration expired. FundingPips ($45K) is overdue. Only Freshworks ($150K) is active and progressing. Twilio S2 peaked at $2.7M in Q3 CY25 and has declined significantly.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-a">
+        <div class="alert-icon">!</div>
+        <div class="alert-body">
+          <div class="alert-title">47+ partner event leads stuck in Engaged — not being worked</div>
+          <div class="alert-detail">Leads who attended partner events scored +60 behavior points but have not hit the 100 point MQL threshold. No SDR or AE assigned. They decay back to Known in 30 days. Partner Lead Nurture sequence needed.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-g">
+        <div class="alert-icon">✓</div>
+        <div class="alert-body">
+          <div class="alert-title">AI Launch Event NYC is the highest volume campaign — 14 opps, $3.1M, 7 at S2</div>
+          <div class="alert-detail">Etsy ($450K), Business Insider ($250K), Nielsen ($200K), EY ($189K), Barstool Sports ($195K at BTE) all in active pipeline. Template for future field events.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-g">
+        <div class="alert-icon">✓</div>
+        <div class="alert-body">
+          <div class="alert-title">Away Suitcase LA — Docker ($200K) and Tennis Channel ($184K) both at S2</div>
+          <div class="alert-detail">Best performing dedicated partner event. Razer Inc. also at Qualification. 6 opps, $734K total, 3 at S2 or Qualification. Best format to replicate with other partners.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AWS PIPELINE -->
+    <div id="tab-aws" class="section">
+      <div class="filter-bar">
+        <span class="filter-label">Filter by PSM / AE:</span>
+        <select id="aws-psm-filter" onchange="filterAWSTable()">
+          <option value="all">All owners</option>
+          <option value="Clay Crema">Clay Crema</option>
+          <option value="Conrad Sager">Conrad Sager</option>
+          <option value="Kyle McDaniel">Kyle McDaniel</option>
+          <option value="Nate Harrison">Nate Harrison</option>
+          <option value="Tyler Benham">Tyler Benham</option>
+          <option value="Arlyn Goldstein">Arlyn Goldstein</option>
+        </select>
+        <select id="aws-stage-filter" onchange="filterAWSTable()">
+          <option value="all">All stages</option>
+          <option value="active">Active only</option>
+          <option value="s2">S2+</option>
+          <option value="lost">Closed Lost</option>
+        </select>
+        <select id="aws-campaign-filter" onchange="filterAWSTable()">
+          <option value="all">All campaigns</option>
+          <option value="Clippers">Clippers vs Thunder</option>
+          <option value="CVision Austin">CVision Austin</option>
+          <option value="Away Suitcase">Away Suitcase LA</option>
+          <option value="CVision Toronto">CVision Toronto</option>
+          <option value="Bangalore">Bangalore B2C</option>
+          <option value="AI Launch NYC">AI Launch NYC</option>
+          <option value="AI Launch SF">AI Launch SF</option>
+        </select>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="m-label">Total FY26 pipeline</div>
+          <div class="m-value">$8.4M</div>
+          <div class="m-sub">53 opportunities</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Active pipeline</div>
+          <div class="m-value">~$5.1M</div>
+          <div class="m-sub">Excluding closed lost</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Closed lost</div>
+          <div class="m-value">$3.3M</div>
+          <div class="m-sub">15 opportunities lost</div>
+          <div class="m-flag flag-red">39% loss rate by ARR</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">S2 confirmed</div>
+          <div class="m-value">$300K</div>
+          <div class="m-sub">Docker, Trinity, Meet Dandy</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">All AWS-associated opportunities</div><div class="card-meta">FY26 · Primary partner = AWS</div></div>
+        <div class="tbl-wrap">
+          <table id="aws-table">
+            <thead><tr>
+              <th>Opportunity</th>
+              <th>Campaign</th>
+              <th>Stage</th>
+              <th>ARR</th>
+              <th>S2 Date</th>
+              <th>AE Owner</th>
+            </tr></thead>
+            <tbody id="aws-tbody"></tbody>
+          </table>
+        </div>
+        <div class="data-note">Source: Salesforce AWS Campaigns and Opptys report, Apr 16 2026. FY26 only. Primary partner = AWS. Use filters above to view by PSM, stage, or campaign.</div>
+      </div>
+    </div>
+
+    <!-- TWILIO PIPELINE -->
+    <div id="tab-twilio" class="section">
+      <div class="filter-bar">
+        <span class="filter-label">Filter by PSM:</span>
+        <select id="twilio-psm-filter" onchange="filterTwilioTable()">
+          <option value="all">All PSMs</option>
+          <option value="Clay Crema">Clay Crema</option>
+          <option value="Pratham Shetty">Pratham Shetty</option>
+          <option value="Emrah Çetin">Emrah Çetin</option>
+          <option value="Kathryn Phuo">Kathryn Phuo</option>
+          <option value="Jamie Takens">Jamie Takens</option>
+        </select>
+        <select id="twilio-status-filter" onchange="filterTwilioTable()">
+          <option value="all">All statuses</option>
+          <option value="active">Active</option>
+          <option value="expired">Expired</option>
+          <option value="overdue">Overdue</option>
+        </select>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="m-label">Approved deal reg</div>
+          <div class="m-value">20</div>
+          <div class="m-sub">Apr 15, 2026</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Rejected deal reg</div>
+          <div class="m-value">10</div>
+          <div class="m-sub">33% rejection rate</div>
+          <div class="m-flag flag-amber">Monitor</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Open pipeline</div>
+          <div class="m-value">$275K</div>
+          <div class="m-sub">Effective: $195K (excl. expired)</div>
+          <div class="m-flag flag-amber">Yatra expired</div>
+        </div>
+        <div class="metric-card">
+          <div class="m-label">Closed won</div>
+          <div class="m-value">$750K</div>
+          <div class="m-sub">vs $2.8M closed lost</div>
+          <div class="m-flag flag-red">21% win rate</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Active deals</div><div class="card-meta">Apr 15, 2026</div></div>
+        <div class="tbl-wrap">
+          <table id="twilio-table">
+            <thead><tr>
+              <th>Deal</th>
+              <th>Segment</th>
+              <th>PSM</th>
+              <th>Stage</th>
+              <th>ARR</th>
+              <th>Close Date</th>
+              <th>Status</th>
+              <th>Next steps</th>
+            </tr></thead>
+            <tbody id="twilio-tbody"></tbody>
+          </table>
+        </div>
+        <div class="data-note">Source: Salesforce Twilio Deal Pipeline Analysis, Apr 15 2026. Yatra deal registration expired Sep 2025 — inflating pipeline number. Recommend refreshing or closing.</div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title">S2s QoQ trend</div></div>
+          <table>
+            <thead><tr><th>Quarter</th><th>S2 pipeline</th><th>Trend</th></tr></thead>
+            <tbody>
+              <tr><td>Q2 CY2025</td><td>$35K</td><td>—</td></tr>
+              <tr><td>Q3 CY2025</td><td>$2.7M</td><td><span class="badge b-green">Peak</span></td></tr>
+              <tr><td>Q4 CY2025</td><td>$69K</td><td><span class="badge b-red">-97%</span></td></tr>
+              <tr><td>Q1 CY2026</td><td>$175K</td><td><span class="badge b-amber">+154%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Closed won</div></div>
+          <table>
+            <thead><tr><th>Opportunity</th><th>ARR</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td>Sony Pictures Entertainment</td><td>$540K</td><td>Expand</td></tr>
+              <tr><td>IC Markets Group Ltd</td><td>$100K</td><td>Land</td></tr>
+              <tr><td>W.R. Berkley Corporation</td><td>$74.2K</td><td>Land</td></tr>
+              <tr><td>Scrubs and Beyond</td><td>$35K</td><td>Land</td></tr>
+              <tr class="tr-total"><td>Total</td><td>$749.2K</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACE CREDITS -->
+    <div id="tab-ace" class="section">
+      <div class="alert alert-r" style="margin-bottom:20px;">
+        <div class="alert-icon">⚑</div>
+        <div class="alert-body">
+          <div class="alert-title">27 opportunities have no ACE WMP credit submitted — ~$3.1M+ at risk</div>
+          <div class="alert-detail">ACE credit submission sits with the partner team. Bring the full list below to Peter and Kim immediately. Credits can be submitted for closed lost deals in many cases — do not skip those.</div>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card"><div class="m-label">Opps not submitted</div><div class="m-value">27</div><div class="m-flag flag-red">Action required</div></div>
+        <div class="metric-card"><div class="m-label">ARR at risk</div><div class="m-value">$3.1M+</div><div class="m-sub">Estimated from flagged list</div></div>
+        <div class="metric-card"><div class="m-label">Largest gap</div><div class="m-value">$775K</div><div class="m-sub">Orange S.A.</div></div>
+        <div class="metric-card"><div class="m-label">Submission owner</div><div class="m-value">Partner team</div><div class="m-sub">Escalate to Peter + Kim</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Full ACE WMP credits not submitted list</div><div class="card-meta">Apr 13, 2026</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Opportunity</th><th>AWS Stage</th><th>Net New ARR</th><th>Priority</th></tr></thead>
+            <tbody>
+              <tr><td>Orange S.A.</td><td>—</td><td>$775.00K</td><td><span class="badge b-red">Largest — urgent</span></td></tr>
+              <tr><td>Crypto</td><td>—</td><td>$463.69K</td><td><span class="badge b-red">Urgent</span></td></tr>
+              <tr><td>Quizlet</td><td>Closed Lost</td><td>$424.15K</td><td><span class="badge b-amber">Submit even if lost</span></td></tr>
+              <tr><td>Vizient, Inc.</td><td>—</td><td>$290.00K</td><td><span class="badge b-red">Urgent</span></td></tr>
+              <tr><td>Themis Solutions (DBA Clio)</td><td>—</td><td>$127.98K</td><td><span class="badge b-red">Urgent</span></td></tr>
+              <tr><td>Fortune Magazine</td><td>Launched</td><td>$126.26K</td><td><span class="badge b-red">Urgent</span></td></tr>
+              <tr><td>Funko, LLC</td><td>Launched</td><td>$153.48K</td><td><span class="badge b-red">Urgent</span></td></tr>
+              <tr><td>DKV EURO SERVICE GmbH</td><td>—</td><td>$153.80K</td><td><span class="badge b-red">Urgent</span></td></tr>
+              <tr><td>The Ritz-Carlton Yacht Collection</td><td>—</td><td>$162.69K</td><td><span class="badge b-red">Urgent</span></td></tr>
+              <tr><td>beehiiv</td><td>—</td><td>$65.00K</td><td><span class="badge b-amber">Submit</span></td></tr>
+              <tr><td>Lotte Hi-Mart</td><td>—</td><td>$76.45K</td><td><span class="badge b-amber">Submit</span></td></tr>
+              <tr><td>Global X</td><td>—</td><td>$34.00K</td><td><span class="badge b-amber">Submit</span></td></tr>
+              <tr><td>Eucalyptus</td><td>—</td><td>$77.60K</td><td><span class="badge b-amber">Submit</span></td></tr>
+              <tr><td>Shake Shack</td><td>Launched</td><td>$99.50K</td><td><span class="badge b-amber">Submit</span></td></tr>
+              <tr><td>TBI Bank BG</td><td>Launched</td><td>$59.80K</td><td><span class="badge b-amber">Submit</span></td></tr>
+              <tr><td>Select Car Leasing</td><td>Launched</td><td>$49.00K</td><td><span class="badge b-amber">Submit</span></td></tr>
+              <tr><td>Coinone</td><td>—</td><td>$40.00K</td><td><span class="badge b-amber">Submit</span></td></tr>
+              <tr><td>Bend.com</td><td>—</td><td>$32.50K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr><td>Crisp</td><td>—</td><td>$23.00K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr><td>Rodobens</td><td>—</td><td>$35.60K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr><td>Rynekpierwotny.pl</td><td>—</td><td>$24.00K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr><td>PUFFCO</td><td>—</td><td>$25.20K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr><td>Feel Mining</td><td>Launched</td><td>$15.00K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr><td>Cellulant</td><td>—</td><td>$19.00K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr><td>CTdots (Dunst)</td><td>—</td><td>$24.00K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr><td>U.S. Green Building Council</td><td>Closed Lost</td><td>$72.50K</td><td><span class="badge b-amber">Submit even if lost</span></td></tr>
+              <tr><td>Rodobens (2nd)</td><td>—</td><td>$24.00K</td><td><span class="badge b-gray">Submit</span></td></tr>
+              <tr class="tr-total"><td>Total (27 opps)</td><td></td><td>~$3.1M+</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-note">Source: Salesforce ACE WMP Credits Not Submitted report, Apr 13 2026. Orange S.A. ($775K) was not visible in the original PDF screenshot — discovered in the full report. Submit credits for closed lost deals too. AWS credit can often still be claimed post-loss.</div>
+      </div>
+    </div>
+
+    <!-- WIN / LOSS -->
+    <div id="tab-winloss" class="section">
+      <div class="metric-grid">
+        <div class="metric-card"><div class="m-label">Total lost ARR (FY26)</div><div class="m-value">$3.3M</div><div class="m-sub">15 opportunities</div><div class="m-flag flag-red">39% of total pipeline</div></div>
+        <div class="metric-card"><div class="m-label">Highest loss campaign</div><div class="m-value">AI Launch SF</div><div class="m-sub">$1.37M lost · 8 opps</div></div>
+        <div class="metric-card"><div class="m-label">Avg deal size lost</div><div class="m-value">$220K</div><div class="m-sub">vs $267K won</div></div>
+        <div class="metric-card"><div class="m-label">Away Suitcase win rate</div><div class="m-value">50%</div><div class="m-sub">3 of 6 opps active</div><div class="m-flag flag-green">Best event format</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Losses by campaign</div><div class="card-meta">FY26 closed lost only</div></div>
+
+        <div class="wl-campaign">
+          <div class="wl-campaign-header">
+            <div class="wl-campaign-name">AI Launch Event SF — Feb 18, 2026</div>
+            <div class="wl-stats">
+              <div class="wl-stat">Lost: <span>$1.37M · 8 opps</span></div>
+              <div class="wl-stat">Active: <span>$700K · 3 opps</span></div>
+              <div class="wl-stat">Win rate: <span>27%</span></div>
+            </div>
+          </div>
+          <div style="padding:12px 14px;">
+            <div class="wl-bar">
+              <div class="wl-segment" style="background:var(--red-bg);color:var(--red);width:30%;">Tinder $250K</div>
+              <div class="wl-segment" style="background:var(--red-bg);color:var(--red);width:20%;">Marriott $250K</div>
+              <div class="wl-segment" style="background:var(--red-bg);color:var(--red);width:18%;">Zendesk $200K</div>
+              <div class="wl-segment" style="background:var(--red-bg);color:var(--red);width:15%;">Marqeta $200K</div>
+              <div class="wl-segment" style="background:var(--red-bg);color:var(--red);width:10%;">Others</div>
+            </div>
+            <table style="margin-top:8px;">
+              <thead><tr><th>Lost deal</th><th>ARR</th><th>Stage lost</th></tr></thead>
+              <tbody>
+                <tr><td>Tinder</td><td>$250K</td><td>Closed Lost</td></tr>
+                <tr><td>Marriott International</td><td>$250K</td><td>Closed Lost</td></tr>
+                <tr><td>Zendesk (Analytics team)</td><td>$200K</td><td>Closed Lost</td></tr>
+                <tr><td>Marqeta</td><td>$200K</td><td>Closed Lost</td></tr>
+                <tr><td>HeyGen</td><td>$100K</td><td>Closed Lost</td></tr>
+                <tr><td>Collectors</td><td>$100K</td><td>Closed Lost</td></tr>
+                <tr><td>Superpower Health</td><td>$100K</td><td>Closed Lost</td></tr>
+                <tr><td>Serena & Lily</td><td>$70K</td><td>Closed Lost</td></tr>
+                <tr><td>Cohesity</td><td>$100K</td><td>Closed Lost</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="wl-campaign">
+          <div class="wl-campaign-header">
+            <div class="wl-campaign-name">AI Launch Event NYC — Feb 10, 2026</div>
+            <div class="wl-stats">
+              <div class="wl-stat">Lost: <span>$650K · 5 opps</span></div>
+              <div class="wl-stat">Active: <span>$2.4M · 9 opps</span></div>
+              <div class="wl-stat">Win rate: <span>64%</span></div>
+            </div>
+          </div>
+          <div style="padding:12px 14px;">
+            <table>
+              <thead><tr><th>Lost deal</th><th>ARR</th></tr></thead>
+              <tbody>
+                <tr><td>Ro</td><td>$150K</td></tr>
+                <tr><td>Bayer</td><td>$250K</td></tr>
+                <tr><td>Charlie Health</td><td>$100K</td></tr>
+                <tr><td>Vince</td><td>$100K</td></tr>
+                <tr><td>Major League Soccer (2nd)</td><td>$50K</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="wl-campaign">
+          <div class="wl-campaign-header">
+            <div class="wl-campaign-name">Away Suitcase Event LA — Mar 4, 2026</div>
+            <div class="wl-stats">
+              <div class="wl-stat">Lost: <span>$250K · 2 opps</span></div>
+              <div class="wl-stat">Active: <span>$484K · 3 opps</span></div>
+              <div class="wl-stat">Win rate: <span>66%</span></div>
+            </div>
+          </div>
+          <div style="padding:12px 14px;">
+            <table>
+              <thead><tr><th>Lost deal</th><th>ARR</th></tr></thead>
+              <tbody>
+                <tr><td>Qventus</td><td>$50K</td></tr>
+                <tr><td>Sweetgreen</td><td>$100K</td></tr>
+                <tr><td>Magnite</td><td>$100K</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="data-note">AI Launch SF had the worst loss rate at 73% by ARR. The intimate format of Away Suitcase (66% active) and AI Launch NYC (64% active) significantly outperforms the larger SF event. Consider whether the SF event format needs restructuring or tighter ICP qualification before future runs.</div>
+      </div>
+    </div>
+
+    <!-- PARTNER SCORECARD -->
+    <div id="tab-scorecard" class="section">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Partner contribution scorecard</div><div class="card-meta">FY26 YTD · All active partners</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Partner</th>
+              <th>Tier</th>
+              <th>Events run</th>
+              <th>MQLs</th>
+              <th>SALs</th>
+              <th>S2 pipeline</th>
+              <th>Closed won</th>
+              <th>ACE credits</th>
+              <th>Health</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:500;">AWS</td>
+                <td><span class="badge b-blue">Strategic</span></td>
+                <td>6</td>
+                <td>49</td>
+                <td>42</td>
+                <td>$300K</td>
+                <td>—</td>
+                <td><span class="badge b-red">27 missing</span></td>
+                <td><span class="badge b-amber">At risk</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;">Twilio Segment</td>
+                <td><span class="badge b-blue">Strategic</span></td>
+                <td>4</td>
+                <td>53</td>
+                <td>—</td>
+                <td>$275K</td>
+                <td>$750K</td>
+                <td>N/A</td>
+                <td><span class="badge b-amber">Thin pipeline</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;">GitHub</td>
+                <td><span class="badge b-blue">Strategic</span></td>
+                <td>1</td>
+                <td>22</td>
+                <td>18</td>
+                <td>$0</td>
+                <td>—</td>
+                <td>N/A</td>
+                <td><span class="badge b-amber">Monitor S2</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;">Anthropic</td>
+                <td><span class="badge b-purple">AI Native</span></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>$0</td>
+                <td>—</td>
+                <td>N/A</td>
+                <td><span class="badge b-blue">Brand play</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;">Figma</td>
+                <td><span class="badge b-purple">AI Native</span></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>$0</td>
+                <td>—</td>
+                <td>N/A</td>
+                <td><span class="badge b-blue">Config Jun 23</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;">Notion</td>
+                <td><span class="badge b-purple">AI Native</span></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>$0</td>
+                <td>—</td>
+                <td>N/A</td>
+                <td><span class="badge b-blue">+52,866% reach</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;">Iterable</td>
+                <td><span class="badge b-blue">Strategic</span></td>
+                <td>1</td>
+                <td>0</td>
+                <td>0</td>
+                <td>$0</td>
+                <td>—</td>
+                <td>N/A</td>
+                <td><span class="badge b-gray">Apr 22 upcoming</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;">Braze</td>
+                <td><span class="badge b-blue">Strategic</span></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>$0</td>
+                <td>—</td>
+                <td>N/A</td>
+                <td><span class="badge b-amber">Clarify status</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:500;">Lovable</td>
+                <td><span class="badge b-green">PLG</span></td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>$0</td>
+                <td>—</td>
+                <td>N/A</td>
+                <td><span class="badge b-gray">Pending launch</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-note">AWS and Twilio are the only partners with measurable pipeline today. AI Native partners (Anthropic, Figma, Notion, Cursor) are brand plays with outsized social reach. GitHub has the most untapped pipeline potential — 22 MQLs and 18 SALs with zero S2 yet. Add your SFDC partner performance dashboard data to populate the Braze and Lovable rows with more detail.</div>
+      </div>
+    </div>
+
+    <!-- FOLLOW-UP GAPS -->
+    <div id="tab-followup" class="section">
+      <div class="metric-grid">
+        <div class="metric-card"><div class="m-label">MQL threshold</div><div class="m-value">100 pts</div><div class="m-sub">Behavior + Fit combined</div></div>
+        <div class="metric-card"><div class="m-label">Event attendance score</div><div class="m-value">+60 pts</div><div class="m-sub">High behavior tier</div><div class="m-flag flag-amber">Needs +40 fit to MQL</div></div>
+        <div class="metric-card"><div class="m-label">Engaged decay</div><div class="m-value">30 days</div><div class="m-sub">Then resets to Known</div></div>
+        <div class="metric-card"><div class="m-label">PSM SLA event MQLs</div><div class="m-value">24 hrs</div><div class="m-sub">3 business days</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Live: responded but not MQL — full contact list</div>
+          <div class="card-meta" id="unworked-live-meta">Loading from Snowflake...</div>
+        </div>
+        <div class="filter-bar" style="margin-bottom:14px;">
+          <span class="filter-label">Filter:</span>
+          <select id="unworked-campaign-filter" onchange="filterUnworkedTable()">
+            <option value="all">All campaigns</option>
+            <option value="Clippers">Clippers vs Thunder Suite</option>
+            <option value="CVision Austin">CVision Austin</option>
+            <option value="CVision Roundtable w/ AWS">CVision Roundtable w/ AWS</option>
+            <option value="GDC">GDC Live Ops Symposium</option>
+            <option value="ShopTalk">ShopTalk</option>
+            <option value="LATAM">LATAM Minders</option>
+            <option value="CVision Roundtable w/ AWS + Twilio">CVision Boston</option>
+          </select>
+          <select id="unworked-level-filter" onchange="filterUnworkedTable()">
+            <option value="all">All levels</option>
+            <option value="Vice President">VP+</option>
+            <option value="Director/Head of">Director+</option>
+            <option value="C-Level">C-Level / President</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Name</th>
+              <th>Company</th>
+              <th>Function</th>
+              <th>Level</th>
+              <th>Campaign</th>
+              <th>Days since event</th>
+              <th>Priority</th>
+            </tr></thead>
+            <tbody id="unworked-tbody">
+              <tr><td colspan="7"><div class="loading"><div class="loading-spinner"></div>Loading live Snowflake data...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-note">Source: Snowflake live query — partner campaign members who responded but have no MQL date. These are active leads no one is working. Query runs automatically on page load. Use filters to find VP+ or Director+ contacts first.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Follow-up gap by campaign</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Campaign</th><th>MQLs</th><th>SALs</th><th>Gap</th><th>Days since event</th><th>Risk</th></tr></thead>
+            <tbody>
+              <tr><td>Github Partner Webinar (Jan 15)</td><td>22</td><td>18</td><td>4</td><td>91</td><td><span class="badge b-red">Action needed</span></td></tr>
+              <tr><td>Twilio Signal (May 2025)</td><td>53</td><td>—</td><td>—</td><td>337</td><td><span class="badge b-red">Pull SAL data</span></td></tr>
+              <tr><td>AWS GenAI Symposium (Oct 22)</td><td>47</td><td>42</td><td>5</td><td>176</td><td><span class="badge b-amber">Monitor</span></td></tr>
+              <tr><td>Dollars and Sense Webinar (Oct 22)</td><td>6</td><td>4</td><td>2</td><td>176</td><td><span class="badge b-amber">Monitor</span></td></tr>
+              <tr><td>GDC Reception w/ Slalom (Mar 9)</td><td>6</td><td>4</td><td>2</td><td>38</td><td><span class="badge b-amber">Monitor</span></td></tr>
+              <tr><td>Away Suitcase Event LA (Mar 4)</td><td>7</td><td>5</td><td>2</td><td>43</td><td><span class="badge b-amber">Monitor</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-title">Why leads fall through</div></div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:16px;">
+          Event attendance scores +60 behavior points. To reach MQL at 100 points the lead needs a Fit Score of at least 40. Fit score is based on role, job level, company size, industry, ARR, technographics, and alumni status. Leads who are adjacent to ICP but not exact matches land in Engaged and decay back to Known within 30 days.
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <div style="background:var(--blue-bg);color:var(--blue);padding:5px 12px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;">Attends event +60</div>
+          <div style="color:var(--text3);align-self:center;font-size:11px;">→</div>
+          <div style="background:var(--amber-bg);color:var(--amber);padding:5px 12px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;">Engaged stage</div>
+          <div style="color:var(--text3);align-self:center;font-size:11px;">→</div>
+          <div style="background:var(--red-bg);color:var(--red);padding:5px 12px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;">No follow-up assigned</div>
+          <div style="color:var(--text3);align-self:center;font-size:11px;">→</div>
+          <div style="background:var(--surface2);color:var(--text3);padding:5px 12px;border-radius:20px;font-size:11px;font-family:'DM Mono',monospace;">Decays to Known in 30 days</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:14px;font-size:12px;color:var(--text3);line-height:1.6;border-left:2px solid var(--accent2);">
+          <strong style="color:var(--accent);font-weight:500;">Recommended fix:</strong> Build a Partner Lead Nurture smart campaign in Marketo targeting contacts with behavior score 40-99 who attended a partner event in the last 60 days. 2-touch email sequence referencing the event and the partner solution. Runs from partner marketing directly. No AE or SDR buy-in required.
+        </div>
+      </div>
+    </div>
+
+    <!-- PSM ACTIONS -->
+    <div id="tab-psm" class="section">
+      <div class="alert alert-b" style="margin-bottom:20px;">
+        <div class="alert-icon">i</div>
+        <div class="alert-body">
+          <div class="alert-title">Monday morning PSM action list</div>
+          <div class="alert-detail">This section surfaces what each PSM needs to action this week based on active deals, MQL activity from partner events, and SLA deadlines. Refresh live data to pull the latest Snowflake MQL counts.</div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <span class="filter-label">Filter by PSM:</span>
+        <select id="psm-filter" onchange="filterPSM()">
+          <option value="all">All PSMs</option>
+          <option value="Clay Crema">Clay Crema</option>
+          <option value="Pratham Shetty">Pratham Shetty</option>
+          <option value="Emrah Çetin">Emrah Çetin</option>
+          <option value="Jamie Takens">Jamie Takens</option>
+          <option value="Kathryn Phuo">Kathryn Phuo</option>
+          <option value="Perri O'Brien">Perri O'Brien</option>
+          <option value="Ted Sfikas">Ted Sfikas</option>
+        </select>
+      </div>
+
+      <div id="psm-cards"></div>
+
+      <div class="section-divider" style="margin-top:24px;">MQLs from partner events — last 30 days</div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Recent partner event MQLs by AE owner</div><div class="card-meta">Twilio Signal May 2025 cohort — confirmed MQLs</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Contact</th><th>AE Owner</th><th>MQL Date</th><th>Campaign</th><th>SLA Status</th></tr></thead>
+            <tbody>
+              <tr><td>Tyler Lummis</td><td>Robyn Baron</td><td>May 16, 2025</td><td>Twilio Signal</td><td><span class="badge b-gray">Historical</span></td></tr>
+              <tr><td>Aidan Viggiano</td><td>Clay Crema</td><td>May 16, 2025</td><td>Twilio Signal</td><td><span class="badge b-gray">Historical</span></td></tr>
+              <tr><td>Sang Shin</td><td>Kyle McDaniel</td><td>May 16, 2025</td><td>Twilio Signal</td><td><span class="badge b-gray">Historical</span></td></tr>
+              <tr><td>Tess Mercer</td><td>Tyler Benham</td><td>May 16, 2025</td><td>Twilio Signal</td><td><span class="badge b-gray">Historical</span></td></tr>
+              <tr><td>Laura Tardif</td><td>Arlyn Goldstein</td><td>May 16, 2025</td><td>Twilio Signal</td><td><span class="badge b-gray">Historical</span></td></tr>
+              <tr><td>Chris Walker</td><td>Peter Walters</td><td>May 16, 2025</td><td>Twilio Signal</td><td><span class="badge b-gray">Historical</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-note">Full Twilio Signal MQL list has 53 contacts. Export full list from Salesforce Twilio MQL Report and paste here to populate all AE owners and current SAL conversion status. Twilio Signal 2026 is May 6-7 — start audience building now.</div>
+      </div>
+    </div>
+
+    <!-- PARTNER TRACKER -->
+    <div id="tab-partners" class="section">
+      <div class="filter-bar">
+        <span class="filter-label">Filter:</span>
+        <select id="tier-filter" onchange="filterPartners()">
+          <option value="all">All tiers</option>
+          <option value="strategic">Strategic Enterprise</option>
+          <option value="ai-native">AI Native</option>
+          <option value="plg">PLG Accelerator</option>
+        </select>
+        <select id="status-filter" onchange="filterPartners()">
+          <option value="all">All statuses</option>
+          <option value="active">Active</option>
+          <option value="warm">Warm</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div class="partner-grid" id="partner-grid"></div>
+      <div class="data-note" style="margin-top:8px;">Partner status as of Apr 16 2026. Social reach data from Feb 2026 MCP launch campaign. Pipeline from Salesforce AWS and Twilio dashboards.</div>
+    </div>
+
+  </div>
+
+  <!-- AE LEADERBOARD -->
+  <div id="tab-leaderboard" class="section">
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="m-label">Campaigns with stalled opps</div>
+        <div class="m-value" id="lb-stalled">—</div>
+        <div class="m-sub">No S2 progress 30+ days</div>
+        <div class="m-flag flag-amber">Action needed</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Unassigned MQLs</div>
+        <div class="m-value">12+</div>
+        <div class="m-sub">Marketo Monster owned</div>
+        <div class="m-flag flag-red">Route immediately</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Total partner MQLs</div>
+        <div class="m-value">53+</div>
+        <div class="m-sub">Twilio Signal + partner events</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Reps with 0 pipeline created</div>
+        <div class="m-value" id="lb-zero-pipe">—</div>
+        <div class="m-sub">Have MQLs but no opp</div>
+        <div class="m-flag flag-amber">Follow-up gap</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <span class="filter-label">View:</span>
+      <select id="lb-view" onchange="renderLeaderboard()">
+        <option value="campaign">By campaign</option>
+        <option value="ae">By AE / SDR</option>
+      </select>
+      <select id="lb-flag-filter" onchange="renderLeaderboard()">
+        <option value="all">All</option>
+        <option value="flagged">Flagged only</option>
+        <option value="active">Active pipeline only</option>
+      </select>
+    </div>
+
+    <div id="lb-campaign-view">
+      <div id="lb-campaign-cards"></div>
+    </div>
+
+    <div id="lb-ae-view" style="display:none;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">AE and SDR — partner pipeline ownership</div>
+          <div class="card-meta">AWS + Twilio · FY26</div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>AE / SDR</th>
+              <th>Team</th>
+              <th>Pipeline</th>
+              <th>MQLs</th>
+              <th>Campaigns</th>
+              <th>Status</th>
+              <th>Action needed</th>
+            </tr></thead>
+            <tbody id="lb-ae-tbody"></tbody>
+          </table>
+        </div>
+        <div class="data-note">Follow-up status is a proxy signal. S2 date present = progressing. No S2 after 30+ days = likely not worked. Connect Salesforce activity records via Snowflake for precise SLA tracking.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ATTRIBUTION MODEL -->
+  <div id="tab-attribution" class="section">
+
+    <div class="alert alert-b" style="margin-bottom:20px;">
+      <div class="alert-icon">i</div>
+      <div class="alert-body">
+        <div class="alert-title">Attribution tracking — everything discussed this week</div>
+        <div class="alert-detail">Tracks every attribution gap, data signal, and intelligence layer discussed during AI Week. Use this as your weekly audit checklist and stakeholder reference for what is live, what is pending, and what each signal contributes.</div>
+      </div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="m-label">Attribution gaps found</div>
+        <div class="m-value">27+</div>
+        <div class="m-sub">Opps missing primary partner tag</div>
+        <div class="m-flag flag-red">Pipeline Auditor needed</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Signals now live</div>
+        <div class="m-value">3</div>
+        <div class="m-sub">Snowflake · Gainsight · 6sense stage</div>
+        <div class="m-flag flag-green">Connected</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Signals pending</div>
+        <div class="m-value">2</div>
+        <div class="m-sub">6sense field name · G2 confirmed out</div>
+        <div class="m-flag flag-amber">Awaiting MOPs</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">Campaigns correctly tagged</div>
+        <div class="m-value">~70%</div>
+        <div class="m-sub">Estimate — run auditor to confirm</div>
+        <div class="m-flag flag-amber">Run auditor Monday</div>
+      </div>
+    </div>
+
+    <div class="section-divider">Attribution gaps — confirmed this week</div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Known attribution gaps</div>
+        <div class="card-meta">Identified Apr 13–16, 2026</div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>Opportunity</th>
+            <th>AE</th>
+            <th>ARR</th>
+            <th>Gap type</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="font-weight:500;color:var(--text);">HP (Retail)</div><div style="font-size:11px;color:var(--text3);">CVision Austin with Twilio</div></td>
+              <td style="font-size:12px;">Grace Evans</td>
+              <td style="font-family:'DM Mono',monospace;font-weight:500;">$250K</td>
+              <td><span class="badge b-red">Primary Campaign Source blank</span></td>
+              <td><span class="badge b-green">Fixed</span></td>
+              <td style="font-size:11px;color:var(--text3);">Confirmed by Christina + Ted Sfikas. Tag corrected manually.</td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500;color:var(--text);">27 ACE WMP opps</div><div style="font-size:11px;color:var(--text3);">Multiple AWS campaigns</div></td>
+              <td style="font-size:12px;">Partner team</td>
+              <td style="font-family:'DM Mono',monospace;font-weight:500;">$3.1M+</td>
+              <td><span class="badge b-red">ACE credits not submitted</span></td>
+              <td><span class="badge b-amber">Escalated</span></td>
+              <td style="font-size:11px;color:var(--text3);">Escalated to Peter + Kim. Partner team owns submission. Orange S.A. $775K largest gap.</td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500;color:var(--text);">100+ unworked leads</div><div style="font-size:11px;color:var(--text3);">All partner campaigns 2025–2026</div></td>
+              <td style="font-size:12px;">Multiple / Marketo Monster</td>
+              <td style="font-family:'DM Mono',monospace;font-weight:500;">Unknown</td>
+              <td><span class="badge b-amber">Responded, never MQL'd</span></td>
+              <td><span class="badge b-amber">In progress</span></td>
+              <td style="font-size:11px;color:var(--text3);">Live in Follow-up Gaps tab. Build Marketo nurture campaign targeting behavior score 40–99.</td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:500;color:var(--text);">Yatra Online</div><div style="font-size:11px;color:var(--text3);">Twilio deal pipeline</div></td>
+              <td style="font-size:12px;">Pratham Shetty</td>
+              <td style="font-family:'DM Mono',monospace;font-weight:500;">$80K</td>
+              <td><span class="badge b-red">Expired deal reg — inflating pipeline</span></td>
+              <td><span class="badge b-amber">Flagged</span></td>
+              <td style="font-size:11px;color:var(--text3);">Deal registration expired Sep 2025. Renew or close. Effective Twilio pipeline is $195K not $275K.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-divider">Data signals — what is connected and what each does</div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Signal layer tracker</div><div class="card-meta">As of Apr 17, 2026</div></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>Signal</th>
+            <th>Source</th>
+            <th>Field</th>
+            <th>Status</th>
+            <th>What it enables</th>
+            <th>Used in</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Campaign funnel</td>
+              <td style="font-size:11px;">Snowflake / Salesforce</td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;">VW_INTEGRATED_FUNNEL_PERFORMANCE</td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">MQL, SAL, S2 counts and ARR by campaign. Core of all dashboard tabs.</td>
+              <td style="font-size:11px;color:var(--text3);">Overview · Follow-up Gaps · Leaderboard</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Gainsight overall health</td>
+              <td style="font-size:11px;">Gainsight via Snowflake</td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;">C_GAINSIGHT_OVERALL_SCORE_C</td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">0–100 score. Identifies at-risk customers at partner events. Low score = loop in CSM not AE.</td>
+              <td style="font-size:11px;color:var(--text3);">Smart Audience Builder · Leaderboard</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Gainsight product usage</td>
+              <td style="font-size:11px;">Gainsight via Snowflake</td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;">C_GAINSIGHT_PRODUCT_USAGE_SCORE_C</td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">0–100 score. High usage = expansion candidate. Surfaces upsell opportunities at partner events.</td>
+              <td style="font-size:11px;color:var(--text3);">Smart Audience Builder · AE Leaderboard</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">6sense buying stage</td>
+              <td style="font-size:11px;">6sense via Snowflake</td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;">Awaiting field name from MOPs</td>
+              <td><span class="badge b-amber">Pending field name</span></td>
+              <td style="font-size:11px;color:var(--text3);">Identifies accounts in Decision or Purchase stage. Filters event lists to in-market accounts only.</td>
+              <td style="font-size:11px;color:var(--text3);">Smart Audience Builder · Overview</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">6sense intent score</td>
+              <td style="font-size:11px;">6sense via Snowflake</td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;">ACCOUNT_INTENT_SCORE_6_SENSE_AMPLITUDE_C</td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">0–100 intent score. Default threshold 70 in Smart Audience Builder. Already queryable.</td>
+              <td style="font-size:11px;color:var(--text3);">Smart Audience Builder</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">6sense segments</td>
+              <td style="font-size:11px;">6sense via Snowflake</td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;">ACCOUNT_SEGMENTS_6SENSE</td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">Segment membership. ICP qualification filter in audience builder.</td>
+              <td style="font-size:11px;color:var(--text3);">Smart Audience Builder</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Industry vertical</td>
+              <td style="font-size:11px;">ZoomInfo via Snowflake</td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;">ZOOM_INFO_INDUSTRY</td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">ICP vertical filter. Exclude non-ICP industries in Smart Audience Builder.</td>
+              <td style="font-size:11px;color:var(--text3);">Smart Audience Builder</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">G2 buying stage</td>
+              <td style="font-size:11px;">G2</td>
+              <td style="font-family:'DM Mono',monospace;font-size:10px;">Not available in Snowflake</td>
+              <td><span class="badge b-gray">Not connected</span></td>
+              <td style="font-size:11px;color:var(--text3);">Would identify accounts actively researching on G2. Replaced by Gainsight for now.</td>
+              <td style="font-size:11px;color:var(--text3);">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-divider">Attribution model — how partner pipeline is credited</div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">How Amplitude credits partner-sourced pipeline</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;font-family:'DM Mono',monospace;margin-bottom:10px;">Source path 4 — partner sourced</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.7;">
+            <div style="margin-bottom:6px;">An opportunity is partner-sourced (source path 4) when the Primary Campaign Source is set to a partner campaign AND the Primary Partner field is populated on the opportunity.</div>
+            <div style="margin-bottom:6px;">This is what drives the $300K YTD S2 sourced ARR number in the dashboard. Only opps with both fields correctly set are counted.</div>
+            <div style="background:var(--surface2);border-radius:8px;padding:10px;margin-top:8px;border-left:2px solid var(--accent2);">
+              <div style="font-size:10px;color:var(--accent2);text-transform:uppercase;letter-spacing:0.06em;font-family:'DM Mono',monospace;margin-bottom:4px;">Why the $8.4M and $300K gap exists</div>
+              <div style="font-size:11px;color:var(--text3);">$8.4M is all opps associated with partner campaigns. $300K is only opps that reached S2 with correct attribution tags. The gap is a mix of pre-S2 pipeline and attribution tagging gaps.</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;font-family:'DM Mono',monospace;margin-bottom:10px;">W-shaped attribution — marketing influenced</div>
+          <div style="font-size:12px;color:var(--text3);line-height:1.7;">
+            <div style="margin-bottom:6px;">W-shaped attribution credits marketing for first touch, lead creation touch, and opportunity creation touch. Partner marketing campaigns get credit whenever a campaign member is on an opportunity — even if not the primary source.</div>
+            <div style="margin-bottom:6px;">This means your events influence significantly more pipeline than the sourced number shows. The Partner Scorecard should show both sourced and influenced ARR.</div>
+            <div style="background:var(--surface2);border-radius:8px;padding:10px;margin-top:8px;border-left:2px solid var(--blue);">
+              <div style="font-size:10px;color:var(--blue);text-transform:uppercase;letter-spacing:0.06em;font-family:'DM Mono',monospace;margin-bottom:4px;">Action needed</div>
+              <div style="font-size:11px;color:var(--text3);">Add W-shaped influenced ARR column to Partner Scorecard tab. This number will be significantly larger than sourced and is the right metric to show Lori and Caroline.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider">Agents and tools — what is live and what each does</div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">AI Week agent and tool inventory</div><div class="card-meta">Built Apr 14–17, 2026</div></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>Agent / tool</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>What it does</th>
+            <th>Trigger</th>
+            <th>Feeds into</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Campaign in a Box</td>
+              <td><span class="badge b-purple">Skill</span></td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">Generates full co-marketing campaign kits from 3 inputs. Landing page, emails, one-pager, LinkedIn posts, talk track, deck outline.</td>
+              <td style="font-size:11px;color:var(--text3);">Manual — open skill and answer 3 questions</td>
+              <td style="font-size:11px;color:var(--text3);">Marketo · Lovable landing page</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Agency Pre-Event Validator</td>
+              <td><span class="badge b-purple">Skill</span></td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">Validates agency-submitted event lists against Amplitude ICP before events. Suppression list cross-reference. ZoomInfo enrichment.</td>
+              <td style="font-size:11px;color:var(--text3);">Manual — paste list into skill</td>
+              <td style="font-size:11px;color:var(--text3);">Event audience · Follow-up Gaps tab</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Agency Post-Event Validator</td>
+              <td><span class="badge b-purple">Skill</span></td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">Processes attendee lists post-event. Drafts personalized follow-up emails. Sections by attended/approved, not pre-approved, no-shows, AE notifications.</td>
+              <td style="font-size:11px;color:var(--text3);">Manual — paste attendee list</td>
+              <td style="font-size:11px;color:var(--text3);">AE Leaderboard · PSM Actions tab</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Smart Audience Builder</td>
+              <td><span class="badge b-blue">Agent</span></td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">Builds signal-driven ICP-filtered audience lists using 6sense intent, Gainsight health, and Snowflake data. Campaign and event modes.</td>
+              <td style="font-size:11px;color:var(--text3);">Manual — open agent</td>
+              <td style="font-size:11px;color:var(--text3);">Marketo upload · Event lists · Dashboard</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Chief of Staff</td>
+              <td><span class="badge b-blue">Agent</span></td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">Runs Fridays at 2:30pm. Pulls from Slack, Granola, Asana, Calendar, Snowflake. Produces 5 drafts before 3pm deadline.</td>
+              <td style="font-size:11px;color:var(--text3);">Friday 2:30pm — open agent</td>
+              <td style="font-size:11px;color:var(--text3);">Dee Ward · Field marketing newsletter · Partnerships channel</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Partner Pipeline Auditor</td>
+              <td><span class="badge b-blue">Agent</span></td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">Audits Salesforce opps for missing attribution. Flags Primary Campaign Source gaps. Drafts AE Slack messages.</td>
+              <td style="font-size:11px;color:var(--text3);">Monday 9am — type "run" in agent</td>
+              <td style="font-size:11px;color:var(--text3);">AE Leaderboard · Attribution tab · ACE credits flag</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500;color:var(--text);">Partner Intelligence Dashboard</td>
+              <td><span class="badge b-gray">Dashboard</span></td>
+              <td><span class="badge b-green">Live</span></td>
+              <td style="font-size:11px;color:var(--text3);">10-tab dashboard. Live Snowflake queries. Real AE owners. AWS + Twilio pipeline. Gainsight scores. Unworked leads drill-down. AE Leaderboard.</td>
+              <td style="font-size:11px;color:var(--text3);">Open URL — auto-refreshes on load</td>
+              <td style="font-size:11px;color:var(--text3);">Lori · Caroline · Peter · Kim · Dee</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-divider">Pending actions — what needs to happen next</div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Open items</div></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Owner</th><th>Priority</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:500;">Get 6sense Buying Stage field name from MOPs</td><td>Christina → MOPs</td><td><span class="badge b-red">This week</span></td><td><span class="badge b-amber">Waiting</span></td></tr>
+            <tr><td style="font-weight:500;">Set Slack reminder — run Pipeline Auditor every Monday 9am</td><td>Christina</td><td><span class="badge b-red">Today</span></td><td><span class="badge b-amber">Not done</span></td></tr>
+            <tr><td style="font-weight:500;">Upload dashboard to Lovable for shareable URL</td><td>Christina</td><td><span class="badge b-red">Today</span></td><td><span class="badge b-amber">Not done</span></td></tr>
+            <tr><td style="font-weight:500;">Route 12+ Marketo Monster MQLs via #help-salesops</td><td>Christina → SDR manager</td><td><span class="badge b-red">Today</span></td><td><span class="badge b-amber">Not done</span></td></tr>
+            <tr><td style="font-weight:500;">Escalate 27 ACE WMP credit gaps to Peter + Kim</td><td>Christina</td><td><span class="badge b-red">Today</span></td><td><span class="badge b-amber">In progress</span></td></tr>
+            <tr><td style="font-weight:500;">Build Marketo partner lead nurture — behavior score 40–99</td><td>Christina → MOPs</td><td><span class="badge b-amber">This week</span></td><td><span class="badge b-gray">Not started</span></td></tr>
+            <tr><td style="font-weight:500;">Connect Lovable landing page to Marketo form (AWS campaign)</td><td>MOPs</td><td><span class="badge b-amber">This week</span></td><td><span class="badge b-gray">Not started</span></td></tr>
+            <tr><td style="font-weight:500;">Add W-shaped influenced ARR to Partner Scorecard</td><td>Christina</td><td><span class="badge b-blue">Next week</span></td><td><span class="badge b-gray">Not started</span></td></tr>
+            <tr><td style="font-weight:500;">Confirm Braze status with Peter + Kim ($2M SCA)</td><td>Christina</td><td><span class="badge b-blue">Next week</span></td><td><span class="badge b-gray">Not started</span></td></tr>
+            <tr><td style="font-weight:500;">Confirm AI Native co-marketing ownership with partnerships team</td><td>Christina</td><td><span class="badge b-blue">Next week</span></td><td><span class="badge b-gray">Not started</span></td></tr>
+            <tr><td style="font-weight:500;">Build Twilio Signal 2026 audience list (May 6–7)</td><td>Christina</td><td><span class="badge b-amber">This week</span></td><td><span class="badge b-gray">Not started</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="data-note">Updated Apr 17, 2026. This tab serves as the live attribution and accountability log for AI Week outputs. Update statuses weekly during Monday morning refresh.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const PASSWORD = 'amplitude2026';
+
+
+function checkPW() { init(); }
+
+function showTab(name, el) {
+  document.querySelectorAll('.section').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const target = document.getElementById('tab-' + name);
+  if (target) {
+    target.classList.add('active');
+    target.style.display = 'block';
+  }
+  el.classList.add('active');
+  if (name === 'leaderboard') renderLeaderboard();
+}
+
+const AWS_OPPS = [
+  { campaign:'Clippers vs Thunder Suite', opp:'Paramount', type:'Land', stage:'1 - Discovery', arr:250000, s2:'—', owner:'Michael McClune' },
+  { campaign:'Clippers vs Thunder Suite', opp:'Taco Bell', type:'Expand Vertical', stage:'1 - Discovery', arr:150000, s2:'—', owner:'Sean Bell McDermott' },
+  { campaign:'Clippers vs Thunder Suite', opp:'Trinity Broadcasting Network', type:'Land', stage:'2 - Qualification', arr:75000, s2:'Apr 10, 2026', owner:'Patrick Surcouf' },
+  { campaign:'CVision Austin with Twilio', opp:'HP (Retail)', type:'Land', stage:'1 - Discovery', arr:250000, s2:'—', owner:'Grace Evans' },
+  { campaign:'Away Suitcase Event LA', opp:'Docker Land', type:'Land', stage:'2 - Qualification', arr:200000, s2:'Apr 13, 2026', owner:'Peter Walters' },
+  { campaign:'Away Suitcase Event LA', opp:'Magnite', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Philip Nordblad' },
+  { campaign:'Away Suitcase Event LA', opp:'Qventus', type:'Land', stage:'8 - Closed Lost', arr:50000, s2:'—', owner:'Nick Pratt' },
+  { campaign:'Away Suitcase Event LA', opp:'Razer Inc.', type:'Land', stage:'2 - Qualification', arr:100000, s2:'Mar 2, 2026', owner:'Neil Griffey' },
+  { campaign:'Away Suitcase Event LA', opp:'Sweetgreen', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Philip Nordblad' },
+  { campaign:'Away Suitcase Event LA', opp:'The Tennis Channel', type:'Land', stage:'2 - Qualification', arr:184000, s2:'Mar 19, 2026', owner:'PJ Franovic' },
+  { campaign:'CVision Toronto w/Twilio', opp:"Moody's Analytics", type:'Expand Horizontal', stage:'1 - Discovery', arr:250000, s2:'—', owner:'Hope Flower' },
+  { campaign:'CVision Toronto w/Twilio', opp:'Pet Valu', type:'Land', stage:'1 - Discovery', arr:200000, s2:'—', owner:'Zachary Gould' },
+  { campaign:'CVision Toronto w/Twilio', opp:'Raymond James Financial', type:'Land', stage:'1 - Discovery', arr:250000, s2:'—', owner:'David Kim' },
+  { campaign:'Bangalore B2C Leaders', opp:'Angel One', type:'Land', stage:'1 - Discovery', arr:75000, s2:'—', owner:'Anthony Ho Cheuk Kiu' },
+  { campaign:'Bangalore B2C Leaders', opp:'Comviva', type:'Land', stage:'1 - Discovery', arr:150000, s2:'—', owner:'Pratham Shetty' },
+  { campaign:'Bangalore B2C Leaders', opp:'Great Learning', type:'Land', stage:'3 - BTE', arr:40000, s2:'Mar 10, 2026', owner:'Pratham Shetty' },
+  { campaign:'Bangalore B2C Leaders', opp:'Lenskart.com', type:'Land', stage:'2 - Qualification', arr:75000, s2:'Apr 9, 2026', owner:'Pratham Shetty' },
+  { campaign:'Bangalore B2C Leaders', opp:'UpGrad.com', type:'Land', stage:'1 - Discovery', arr:75000, s2:'—', owner:'Pratham Shetty' },
+  { campaign:'Bangalore B2C Leaders', opp:'Wakefit', type:'Land', stage:'2 - Qualification', arr:50000, s2:'Apr 7, 2026', owner:'Pratham Shetty' },
+  { campaign:'AppsFlyer BFSI Summit', opp:'GCash', type:'Land', stage:'1 - Discovery', arr:100000, s2:'—', owner:'Baljin Singh' },
+  { campaign:'AppsFlyer BFSI Summit', opp:'Paytm', type:'Land', stage:'0 - Engagement', arr:75000, s2:'—', owner:'Pratham Shetty' },
+  { campaign:'Tokyo Dev X PM Day', opp:'Yayoi Land', type:'Land', stage:'2 - Qualification', arr:25000, s2:'Mar 31, 2026', owner:'Kazuki Hirose' },
+  { campaign:'Tokyo Dev X PM Day', opp:'NEC Solution Innovators', type:'Land', stage:'1 - Discovery', arr:25000, s2:'—', owner:'Kazuki Hirose' },
+  { campaign:'Tokyo Dev X PM Day', opp:'Toyota Motor Corporation', type:'Land', stage:'2 - Qualification', arr:25000, s2:'Mar 31, 2026', owner:'Kazuki Hirose' },
+  { campaign:'AI Launch Event SF', opp:'BILL', type:'Land', stage:'2 - Qualification', arr:150000, s2:'Feb 20, 2026', owner:'Patrick Surcouf' },
+  { campaign:'AI Launch Event SF', opp:'Cohesity', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Ryan Smith' },
+  { campaign:'AI Launch Event SF', opp:'Collectors', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Ryan Smith' },
+  { campaign:'AI Launch Event SF', opp:'HeyGen', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Gabriella Bertran' },
+  { campaign:'AI Launch Event SF', opp:'Innovaccer', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Kaly Leonoudakis' },
+  { campaign:'AI Launch Event SF', opp:'Lending Club', type:'Land', stage:'2 - Qualification', arr:150000, s2:'Mar 10, 2026', owner:'Maggie Peracchi' },
+  { campaign:'AI Launch Event SF', opp:'Logitech', type:'Land', stage:'0 - Engagement', arr:200000, s2:'—', owner:'Paul Fox' },
+  { campaign:'AI Launch Event SF', opp:'Marqeta', type:'Land', stage:'8 - Closed Lost', arr:200000, s2:'—', owner:'Kaly Leonoudakis' },
+  { campaign:'AI Launch Event SF', opp:'Marriott International', type:'Land', stage:'8 - Closed Lost', arr:250000, s2:'—', owner:'Nate Harrison' },
+  { campaign:'AI Launch Event SF', opp:"Peet's Coffee", type:'Land', stage:'1 - Discovery', arr:150000, s2:'—', owner:'Tyler Benham' },
+  { campaign:'AI Launch Event SF', opp:'Serena & Lily', type:'Land', stage:'8 - Closed Lost', arr:70000, s2:'—', owner:'Lucas Demiguel' },
+  { campaign:'AI Launch Event SF', opp:'Superpower Health', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Ryan Smith' },
+  { campaign:'AI Launch Event SF', opp:'Tinder', type:'Expand Horizontal', stage:'8 - Closed Lost', arr:250000, s2:'—', owner:'Christy Barnett' },
+  { campaign:'AI Launch Event SF', opp:'Zendesk (Analytics)', type:'Land', stage:'8 - Closed Lost', arr:200000, s2:'—', owner:'Clay Crema' },
+  { campaign:'AI Launch Event SF', opp:'Zendesk', type:'Land', stage:'2 - Qualification', arr:350000, s2:'Feb 11, 2026', owner:'Clay Crema' },
+  { campaign:'AI Launch Event NYC', opp:'Barstool Sports', type:'Land', stage:'3 - BTE', arr:195000, s2:'Feb 5, 2026', owner:'Shaine Salvador' },
+  { campaign:'AI Launch Event NYC', opp:'Bayer', type:'Land', stage:'8 - Closed Lost', arr:250000, s2:'—', owner:'PJ Franovic' },
+  { campaign:'AI Launch Event NYC', opp:'Business Insider', type:'Expand Horizontal', stage:'2 - Qualification', arr:250000, s2:'Feb 17, 2026', owner:'Nate Harrison' },
+  { campaign:'AI Launch Event NYC', opp:'Charlie Health', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Katie Jiang' },
+  { campaign:'AI Launch Event NYC', opp:'EAB', type:'Land', stage:'2 - Qualification', arr:175000, s2:'Jan 30, 2026', owner:'Susan Wahl' },
+  { campaign:'AI Launch Event NYC', opp:'Etsy', type:'Expand Horizontal', stage:'2 - Qualification', arr:450000, s2:'Mar 5, 2026', owner:'PJ Franovic' },
+  { campaign:'AI Launch Event NYC', opp:'EY', type:'Land', stage:'2 - Qualification', arr:189000, s2:'Feb 6, 2026', owner:'Micah Stevenson' },
+  { campaign:'AI Launch Event NYC', opp:'Indeed.com', type:'Expand Horizontal', stage:'0 - Engagement', arr:285000, s2:'—', owner:'Fe Hmelar' },
+  { campaign:'AI Launch Event NYC', opp:'Major League Soccer (lost)', type:'Land', stage:'8 - Closed Lost', arr:250000, s2:'—', owner:'Brian Wagner' },
+  { campaign:'AI Launch Event NYC', opp:'Major League Soccer', type:'Land', stage:'2 - Qualification', arr:150000, s2:'Mar 4, 2026', owner:'PJ Franovic' },
+  { campaign:'AI Launch Event NYC', opp:'Nielsen', type:'Land', stage:'2 - Qualification', arr:200000, s2:'Mar 17, 2026', owner:'Nate Harrison' },
+  { campaign:'AI Launch Event NYC', opp:'Ro', type:'Land', stage:'8 - Closed Lost', arr:150000, s2:'—', owner:'Eve Mason' },
+  { campaign:'AI Launch Event NYC', opp:'Vince', type:'Land', stage:'8 - Closed Lost', arr:100000, s2:'—', owner:'Shaine Salvador' },
+  { campaign:'AI Launch Event NYC', opp:'Yahoo Publishing', type:'Land', stage:'1 - Discovery', arr:350000, s2:'—', owner:'Paul Fox' },
+];
+
+const TWILIO_DEALS = [
+  { deal:'Freshworks', segment:'AMER Major ENT', psm:'Clay Crema', stage:'1 - Discovery', arr:150000, close:'Oct 9, 2026', status:'active', next:'Follow up Apr 6. Recently purchased Userpilot. Multi-threading in progress. Clay joined eng call Mar 26.' },
+  { deal:'Yatra Online Private Limited', segment:'APJ EE', psm:'Pratham Shetty', stage:'2 - Qualification', arr:80000, close:'Dec 31, 2026', status:'expired', next:'Leadership change deprioritized KPI. Deal registration expired Sep 2025. Reconnect or close.' },
+  { deal:'FundingPips', segment:'EMEA Velocity', psm:'Emrah Çetin', stage:'2 - Qualification', arr:45000, close:'Jul 29, 2026', status:'overdue', next:'Trial interrupted, continuing April. Weekly check-ins ongoing. Close date overdue.' },
+];
+
+const PSM_DATA = [
+  { name:'Clay Crema', initials:'CC', deals:['Freshworks (Twilio) — $150K Discovery — Follow up Apr 6'], mqls:'Active AE on Twilio Signal MQLs', action:'Follow up with Freshworks this week. Engineering call completed Mar 26. Push to Qualification.', urgent:true },
+  { name:'Pratham Shetty', initials:'PS', deals:['Yatra Online (Twilio) — $80K Qualification — EXPIRED'], mqls:'—', action:'Yatra deal registration expired Sep 2025. Reconnect or formally close the deal. Inflating pipeline number.', urgent:true },
+  { name:'Emrah Çetin', initials:'EC', deals:['FundingPips (Twilio) — $45K Qualification — OVERDUE'], mqls:'—', action:'Trial ongoing. Weekly check-ins. Close date Jul 29 but overdue flag on deal. Confirm trial status after Eid break.', urgent:false },
+  { name:'Perri O\'Brien', initials:'PO', deals:['All CVision events — PSM for partner marketing follow-ups'], mqls:'PSM on all partner event follow-up emails', action:'CVision Atlanta May 13 coming up. Confirm registrant list validation is scheduled for Apr 22. Review post-event emails sent for Apr 8 CVision Boston.', urgent:false },
+  { name:'Ted Sfikas', initials:'TS', deals:['CVision Austin (confirmed HP $250K opp)', 'CVision Atlanta May 13 — speaker'], mqls:'—', action:'Confirmed HP Land $250K at Discovery from CVision Austin. Ensure Primary Campaign Source is correctly tagged. Prep for CVision Atlanta May 13 speaking session.', urgent:false },
+];
+
+const PARTNERS = [
+  { name:'AWS', tier:'strategic', status:'active', pipeline:'$8.4M assoc / $300K S2', mqls:'49', touch:'Weekly call + Apr 8 event', next:'CVision Atlanta May 13. Confirm registrant list by Apr 22. Escalate ACE WMP credits — 27 opps unsubmitted to partner team.' },
+  { name:'Twilio Segment', tier:'strategic', status:'active', pipeline:'$275K open / $750K CW', mqls:'53 (Signal)', touch:'Weekly call + Apr 8 event', next:'Twilio Signal May 6-7. Build audience list now via Smart Audience Builder. Review Yatra expired deal.' },
+  { name:'Anthropic', tier:'ai-native', status:'warm', pipeline:'Brand play', mqls:'0', touch:'MCP launch Feb 17', next:'Confirm partner marketing leads AI Native co-marketing. Request intro to co-marketing contact via partnerships team.' },
+  { name:'Figma', tier:'ai-native', status:'active', pipeline:'Brand play', mqls:'0', touch:'Config Jun 23-25', next:'Prepare for Figma Config Leadership Collective Happy Hour Jun 23-25. Confirm booth, assets, and speaker.' },
+  { name:'Cursor', tier:'ai-native', status:'warm', pipeline:'Brand play (+959% reach)', mqls:'0', touch:'MCP Feb 17', next:'Confirm co-marketing ownership with PMM. Request intro via product team.' },
+  { name:'Notion', tier:'ai-native', status:'warm', pipeline:'Brand play (+52,866% reach)', mqls:'0', touch:'Feb 24 launch', next:'Highest social reach of any partner launch. Explore co-hosted webinar or event. Intro via product team.' },
+  { name:'GitHub', tier:'strategic', status:'warm', pipeline:'$0 S2 yet', mqls:'22', touch:'Jan 15 webinar', next:'22 MQLs, 18 SALs generated. Monitor for S2 conversion. Plan next co-marketing activity with product team.' },
+  { name:'Braze', tier:'strategic', status:'pending', pipeline:'$2M SCA contract', mqls:'0', touch:'Unknown', next:'Clarify with Peter and Kim. $2M SCA active since last spring, 5-year term. Needs clarity before any co-marketing.' },
+  { name:'Iterable', tier:'strategic', status:'active', pipeline:'$0 yet', mqls:'0', touch:'Activate Apr 22', next:'Rakeen Mahmud speaking Apr 22 LA. Confirm assets and brief are ready. Build pre-event audience list.' },
+  { name:'Lovable', tier:'plg', status:'active', pipeline:'PLG play (+244% reach)', mqls:'0', touch:'Feb 23 post', next:'Marketing push planned once in-app and API signup flow live. Monitor timing from product team.' },
+];
+
+const TIER_LABELS = { strategic:'Strategic Enterprise', 'ai-native':'AI Native', plg:'PLG Accelerator' };
+const STATUS_COLORS = { active:'b-green', warm:'b-blue', pending:'b-amber', blocked:'b-red' };
+
+function stageColor(stage) {
+  if (stage.includes('Lost')) return 'color:var(--red)';
+  if (stage.includes('Qualification') || stage.includes('BTE')) return 'color:var(--amber)';
+  if (stage.includes('Discovery') || stage.includes('Engagement')) return 'color:var(--blue)';
+  return 'color:var(--text2)';
+}
+
+function fmtArr(v) { return '$' + (v/1000).toFixed(0) + 'K'; }
+
+function renderAWSTable(data) {
+  const tbody = document.getElementById('aws-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = data.map(o => `<tr>
+    <td><div style="font-weight:500;color:var(--text)">${o.opp}</div><div style="font-size:11px;color:var(--text3)">${o.type}</div></td>
+    <td style="font-size:11px;color:var(--text3);max-width:140px;">${o.campaign}</td>
+    <td style="${stageColor(o.stage)};font-size:11px;">${o.stage}</td>
+    <td style="font-family:'DM Mono',monospace;font-weight:500;">${fmtArr(o.arr)}</td>
+    <td style="font-size:11px;color:var(--text3);">${o.s2}</td>
+    <td style="font-size:11px;color:var(--text3);">${o.owner}</td>
+  </tr>`).join('');
+}
+
+function filterAWSTable() {
+  const psm = document.getElementById('aws-psm-filter').value;
+  const stage = document.getElementById('aws-stage-filter').value;
+  const campaign = document.getElementById('aws-campaign-filter').value;
+  let data = AWS_OPPS;
+  if (psm !== 'all') data = data.filter(o => o.owner.includes(psm));
+  if (stage === 'active') data = data.filter(o => !o.stage.includes('Lost'));
+  if (stage === 's2') data = data.filter(o => o.s2 !== '—');
+  if (stage === 'lost') data = data.filter(o => o.stage.includes('Lost'));
+  if (campaign !== 'all') data = data.filter(o => o.campaign.includes(campaign));
+  renderAWSTable(data);
+}
+
+function renderTwilioTable(data) {
+  const tbody = document.getElementById('twilio-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = data.map(o => {
+    const statusBadge = o.status === 'active' ? '<span class="badge b-green">Active</span>' :
+      o.status === 'expired' ? '<span class="badge b-red">Expired</span>' :
+      '<span class="badge b-amber">Overdue</span>';
+    return `<tr>
+      <td style="font-weight:500;color:var(--text)">${o.deal}</td>
+      <td style="font-size:11px;color:var(--text3)">${o.segment}</td>
+      <td style="font-size:11px;">${o.psm}</td>
+      <td style="${stageColor(o.stage)};font-size:11px;">${o.stage}</td>
+      <td style="font-family:'DM Mono',monospace;font-weight:500;">${fmtArr(o.arr)}</td>
+      <td style="font-size:11px;color:var(--text3)">${o.close}</td>
+      <td>${statusBadge}</td>
+      <td style="font-size:11px;color:var(--text3);max-width:200px;line-height:1.5">${o.next}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTwilioTable() {
+  const psm = document.getElementById('twilio-psm-filter').value;
+  const status = document.getElementById('twilio-status-filter').value;
+  let data = TWILIO_DEALS;
+  if (psm !== 'all') data = data.filter(o => o.psm.includes(psm));
+  if (status !== 'all') data = data.filter(o => o.status === status);
+  renderTwilioTable(data);
+}
+
+function renderPSM(data) {
+  const container = document.getElementById('psm-cards');
+  if (!container) return;
+  container.innerHTML = data.map(p => `
+    <div class="psm-card">
+      <div class="psm-avatar">${p.initials}</div>
+      <div class="psm-body">
+        <div class="psm-name">${p.name} ${p.urgent ? '<span class="badge b-red" style="font-size:9px;">Action this week</span>' : ''}</div>
+        <div class="psm-detail">
+          ${p.deals.map(d => `<div style="margin-bottom:2px;">• ${d}</div>`).join('')}
+          <div style="margin-top:6px;color:var(--accent2);">→ ${p.action}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterPSM() {
+  const val = document.getElementById('psm-filter').value;
+  const data = val === 'all' ? PSM_DATA : PSM_DATA.filter(p => p.name === val);
+  renderPSM(data);
+}
+
+function filterPartners() {
+  const tier = document.getElementById('tier-filter').value;
+  const status = document.getElementById('status-filter').value;
+  const data = PARTNERS.filter(p => (tier==='all'||p.tier===tier) && (status==='all'||p.status===status));
+  document.getElementById('partner-grid').innerHTML = data.map(p => `
+    <div class="partner-card">
+      <div class="pc-header">
+        <div><div class="pc-name">${p.name}</div><div class="pc-tier">${TIER_LABELS[p.tier]}</div></div>
+        <span class="badge ${STATUS_COLORS[p.status]||'b-gray'}">${p.status}</span>
+      </div>
+      <div class="pc-stat"><span class="pc-stat-label">Pipeline</span><span class="pc-stat-value">${p.pipeline}</span></div>
+      <div class="pc-stat"><span class="pc-stat-label">MQLs</span><span class="pc-stat-value">${p.mqls}</span></div>
+      <div class="pc-stat"><span class="pc-stat-label">Last touchpoint</span><span class="pc-stat-value">${p.touch}</span></div>
+      <div class="pc-action"><div class="pc-action-label">Next action</div>${p.next}</div>
+    </div>
+  `).join('');
+}
+
+async function loadLiveData() {
+  const label = document.getElementById('refresh-label');
+  label.textContent = 'Refreshing...';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        mcp_servers: [{ type: 'url', url: 'https://rrb16538.snowflakecomputing.com/api/v2/databases/SELECT_STAR/schemas/PUBLIC/mcp-servers/EDI_MCP_SERVER', name: 'snowflake' }],
+        messages: [{
+          role: 'user',
+          content: `Query the Snowflake campaign analyst for all partner campaigns (campaign name ILIKE '%Partner%') with start date between 2025-10-01 and today. Return a JSON array with fields: campaign_name, mql_count, sal_count, s2_count, s2_sourced_arr, closed_won_arr. Return ONLY valid JSON, no other text.`
+        }]
+      })
+    });
+
+    const data = await response.json();
+    const textContent = data.content?.filter(b => b.type === 'text').map(b => b.text).join('');
+
+    if (textContent) {
+      try {
+        const clean = textContent.replace(/```json|```/g, '').trim();
+        const parsed = JSON.parse(clean);
+        renderLiveCampaigns(parsed);
+        const now = new Date();
+        document.getElementById('last-refresh').textContent = 'Live · ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        label.textContent = 'Refresh live data';
+      } catch(e) {
+        renderLiveCampaigns(null);
+        label.textContent = 'Refresh live data';
+      }
+    }
+  } catch(e) {
+    renderLiveCampaigns(null);
+    label.textContent = 'Refresh live data';
+  }
+}
+
+function renderLiveCampaigns(data) {
+  const el = document.getElementById('live-campaign-content');
+  const meta = document.getElementById('live-meta');
+  if (!data) {
+    el.innerHTML = '<div class="data-note" style="text-align:center;padding:20px;">Live Snowflake data unavailable. Showing static data from Apr 16 exports. Click refresh to retry.</div>';
+    meta.textContent = 'Static data · Apr 16, 2026';
+    return;
+  }
+  meta.textContent = 'Live · Snowflake PROD_GTM.L3_DWH';
+  el.innerHTML = `<div class="tbl-wrap"><table>
+    <thead><tr><th>Campaign</th><th>MQLs</th><th>SALs</th><th>S2 opps</th><th>S2 ARR sourced</th><th>Closed won</th><th>Status</th></tr></thead>
+    <tbody>${data.map(c => `<tr>
+      <td style="font-size:11px;max-width:200px;">${c.campaign_name}</td>
+      <td>${c.mql_count||0}</td>
+      <td>${c.sal_count||0}</td>
+      <td>${c.s2_count||0}</td>
+      <td style="font-family:'DM Mono',monospace;">${c.s2_sourced_arr > 0 ? fmtArr(c.s2_sourced_arr) : '—'}</td>
+      <td style="font-family:'DM Mono',monospace;">${c.closed_won_arr > 0 ? fmtArr(c.closed_won_arr) : '—'}</td>
+      <td>${c.s2_sourced_arr > 0 ? '<span class="badge b-green">Pipeline</span>' : c.mql_count > 0 ? '<span class="badge b-blue">In funnel</span>' : '<span class="badge b-red">No activity</span>'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+const CAMPAIGN_BREAKDOWN = [
+  {
+    name: 'Clippers vs Thunder Suite', date: 'Apr 8, 2026', partner: 'AWS + Branch',
+    totalArr: 475000, s2Count: 1, flag: 'active',
+    opps: [
+      { opp: 'Trinity Broadcasting Network', arr: 75000, stage: '2 - Qualification', ae: 'Patrick Surcouf', s2: 'Apr 10, 2026', flag: 'active', action: 'At S2 — Patrick Surcouf to drive to close' },
+      { opp: 'Taco Bell', arr: 150000, stage: '1 - Discovery', ae: 'Sean Bell McDermott', s2: '—', flag: 'followup', action: 'Sean Bell McDermott — 8 days at Discovery, no S2 date. Push to Qualification.' },
+      { opp: 'Paramount', arr: 250000, stage: '1 - Discovery', ae: 'Michael McClune', s2: '—', flag: 'followup', action: 'Michael McClune — largest opp from this event at $250K, 8 days at Discovery with no S2. Push to Qualification.' },
+    ]
+  },
+  {
+    name: 'CVision Austin with Twilio', date: 'Mar 19, 2026', partner: 'AWS + Twilio',
+    totalArr: 250000, s2Count: 0, flag: 'urgent',
+    opps: [
+      { opp: 'HP (Retail)', arr: 250000, stage: '1 - Discovery', ae: 'Grace Evans', s2: '—', flag: 'urgent', action: 'Grace Evans — attribution gap confirmed by Christina + Ted. Primary Campaign Source fixed. 28 days at Discovery, no S2. Push to Qualification immediately.' },
+    ]
+  },
+  {
+    name: 'Away Suitcase Event LA', date: 'Mar 4, 2026', partner: 'AWS + Branch',
+    totalArr: 484000, s2Count: 3, flag: 'active',
+    opps: [
+      { opp: 'Docker Land', arr: 200000, stage: '2 - Qualification', ae: 'Peter Walters', s2: 'Apr 13, 2026', flag: 'active', action: 'Peter Walters — at S2 since Apr 13. Monitor progression to close.' },
+      { opp: 'The Tennis Channel', arr: 184000, stage: '2 - Qualification', ae: 'PJ Franovic', s2: 'Mar 19, 2026', flag: 'active', action: 'PJ Franovic — at S2 since Mar 19, 28 days. Confirm active progression to close.' },
+      { opp: 'Razer Inc.', arr: 100000, stage: '2 - Qualification', ae: 'Neil Griffey', s2: 'Mar 2, 2026', flag: 'active', action: 'Neil Griffey — at Qualification with S2 date Mar 2. Monitor close.' },
+    ]
+  },
+  {
+    name: 'CVision Toronto w/Twilio', date: 'Feb 25, 2026', partner: 'AWS + Twilio',
+    totalArr: 700000, s2Count: 0, flag: 'followup',
+    opps: [
+      { opp: "Moody's Analytics", arr: 250000, stage: '1 - Discovery', ae: 'Hope Flower', s2: '—', flag: 'followup', action: 'Hope Flower — 50 days in Discovery, no S2. High value at $250K. Push to Qualification.' },
+      { opp: 'Raymond James Financial', arr: 250000, stage: '1 - Discovery', ae: 'David Kim', s2: '—', flag: 'followup', action: 'David Kim — 50 days in Discovery, no S2. $250K at risk of going stale.' },
+      { opp: 'Pet Valu', arr: 200000, stage: '1 - Discovery', ae: 'Zachary Gould', s2: '—', flag: 'followup', action: 'Zachary Gould — 50 days in Discovery, no S2 date.' },
+    ]
+  },
+  {
+    name: 'AI Launch Event NYC', date: 'Feb 10, 2026', partner: 'AWS',
+    totalArr: 3094000, s2Count: 7, flag: 'mixed',
+    opps: [
+      { opp: 'Etsy', arr: 450000, stage: '2 - Qualification', ae: 'Unassigned', s2: 'Mar 5, 2026', flag: 'active', action: 'At S2 — largest active opp, confirm AE is driving to close' },
+      { opp: 'Business Insider', arr: 250000, stage: '2 - Qualification', ae: 'Unassigned', s2: 'Feb 17, 2026', flag: 'active', action: 'At S2 since Feb 17 — 58 days, confirm progression' },
+      { opp: 'Nielsen', arr: 200000, stage: '2 - Qualification', ae: 'Unassigned', s2: 'Mar 17, 2026', flag: 'active', action: 'At S2 — 30 days, push to close' },
+      { opp: 'EY', arr: 189000, stage: '2 - Qualification', ae: 'Unassigned', s2: 'Feb 6, 2026', flag: 'monitor', action: 'At S2 — 69 days, aging deal, confirm still active' },
+      { opp: 'Barstool Sports', arr: 195000, stage: '3 - BTE', ae: 'Unassigned', s2: 'Feb 5, 2026', flag: 'active', action: 'At BTE — advanced stage, prioritize close' },
+      { opp: 'EAB', arr: 175000, stage: '2 - Qualification', ae: 'Unassigned', s2: 'Jan 30, 2026', flag: 'monitor', action: 'At S2 — 76 days, oldest active deal, confirm not stalled' },
+      { opp: 'Yahoo Publishing', arr: 350000, stage: '1 - Discovery', ae: 'Paul Fox', s2: '—', flag: 'followup', action: 'Paul Fox — 65 days in Discovery, no S2. Second largest active opp at $350K. Escalate.' },
+      { opp: "Peet's Coffee", arr: 150000, stage: '1 - Discovery', ae: 'Tyler Benham', s2: '—', flag: 'followup', action: "Tyler Benham — 65 days in Discovery, no S2 date." },
+    ]
+  },
+  {
+    name: 'Twilio Signal 2025', date: 'May 14, 2025', partner: 'Twilio',
+    totalArr: 0, s2Count: 0, flag: 'urgent',
+    opps: [
+      { opp: '53 MQLs generated — 12+ unassigned to Marketo Monster', arr: 0, stage: 'MQL', ae: 'Multiple / Marketo Monster', s2: '—', flag: 'urgent', action: 'Route Marketo Monster leads immediately via #help-salesops. Pull full MQL list from Salesforce Twilio MQL Report and confirm SAL conversion status for all 53 contacts.' },
+      { opp: 'Conrad Sager — 5 MQLs, no pipeline', arr: 0, stage: 'MQL', ae: 'Conrad Sager', s2: '—', flag: 'followup', action: '5 MQLs assigned, no opportunity created. Confirm SAL status and whether discovery calls were held.' },
+      { opp: 'Kelly Ward — 4 MQLs, no pipeline', arr: 0, stage: 'MQL', ae: 'Kelly Ward', s2: '—', flag: 'followup', action: '4 MQLs assigned, no opportunity visible. Confirm SAL acceptance and follow-up.' },
+      { opp: 'Arlyn Goldstein — 3 MQLs, no pipeline', arr: 0, stage: 'MQL', ae: 'Arlyn Goldstein (Velocity)', s2: '—', flag: 'followup', action: 'Velocity AE SLA 24hr. 3 MQLs, no pipeline. Confirm whether leads were contacted within SLA.' },
+    ]
+  },
+];
+
+const AE_SUMMARY = [
+  { name: 'PJ Franovic', team: 'AMER ENT', pipeline: 784000, mqls: 0, campaigns: 'AI Launch NYC + Away Suitcase', flag: 'active', action: 'Etsy $450K at S2 (Mar 5), MLS $150K at S2, Tennis Channel $184K at S2, Bayer $250K lost. Largest pipeline of any AE. Monitor Etsy close.' },
+  { name: 'Nate Harrison', team: 'AMER ENT', pipeline: 650000, mqls: 1, campaigns: 'AI Launch NYC + AI Launch SF', flag: 'followup', action: 'Business Insider $250K S2, Nielsen $200K S2, Marriott $250K lost. 1 Twilio Signal MQL. Confirm Business Insider and Nielsen next steps.' },
+  { name: 'Paul Fox', team: 'AMER ENT', pipeline: 550000, mqls: 0, campaigns: 'AI Launch NYC + AI Launch SF', flag: 'followup', action: 'Yahoo Publishing $350K Discovery — 65 days no S2. Logitech $200K Engagement. Both stalled. Escalate Yahoo immediately.' },
+  { name: 'Clay Crema', team: 'AMER ENT', pipeline: 500000, mqls: 2, campaigns: 'AI Launch SF + Twilio', flag: 'followup', action: 'Zendesk $350K at S2 (Feb 11) — 65 days, confirm still active. Zendesk Analytics $200K lost. Freshworks $150K Twilio Discovery — follow up this week.' },
+  { name: 'Patrick Surcouf', team: 'AMER ENT', pipeline: 225000, mqls: 2, campaigns: 'Clippers + AI Launch SF', flag: 'active', action: 'Trinity $75K at S2. BILL $150K at S2. Both progressing. 2 Twilio Signal MQLs also in queue.' },
+  { name: 'Michael McClune', team: 'AMER ENT', pipeline: 250000, mqls: 0, campaigns: 'Clippers vs Thunder', flag: 'followup', action: 'Paramount $250K Discovery — 8 days, no S2. Largest Clippers opp. Push to Qualification.' },
+  { name: 'Sean Bell McDermott', team: 'AMER ENT', pipeline: 150000, mqls: 0, campaigns: 'Clippers vs Thunder', flag: 'followup', action: 'Taco Bell $150K Discovery — 8 days, no S2. Initiate discovery call.' },
+  { name: 'Grace Evans', team: 'AMER ENT', pipeline: 250000, mqls: 0, campaigns: 'CVision Austin', flag: 'urgent', action: 'HP $250K Discovery — 28 days, no S2. Attribution confirmed. Push to Qualification urgently.' },
+  { name: 'Hope Flower', team: 'AMER ENT', pipeline: 250000, mqls: 0, campaigns: 'CVision Toronto', flag: 'followup', action: "Moody's Analytics $250K Discovery — 50 days, no S2. High value. Escalate now." },
+  { name: 'David Kim', team: 'AMER ENT', pipeline: 250000, mqls: 0, campaigns: 'CVision Toronto', flag: 'followup', action: 'Raymond James $250K Discovery — 50 days, no S2. High value. Push to Qualification.' },
+  { name: 'Peter Walters', team: 'AMER ENT', pipeline: 200000, mqls: 1, campaigns: 'Away Suitcase + Twilio Signal', flag: 'active', action: 'Docker $200K at S2 (Apr 13). Progressing. Also has 1 Twilio Signal MQL.' },
+  { name: 'Shaine Salvador', team: 'AMER ENT', pipeline: 195000, mqls: 0, campaigns: 'AI Launch NYC', flag: 'active', action: 'Barstool Sports $195K at BTE — most advanced stage opp. Drive to close. Vince $100K lost.' },
+  { name: 'Micah Stevenson', team: 'AMER ENT', pipeline: 189000, mqls: 0, campaigns: 'AI Launch NYC', flag: 'active', action: 'EY $189K at S2 (Feb 6) — 70 days at S2, aging deal. Confirm still active.' },
+  { name: 'Susan Wahl', team: 'AMER ENT', pipeline: 175000, mqls: 0, campaigns: 'AI Launch NYC', flag: 'active', action: 'EAB $175K at S2 (Jan 30) — 76 days, oldest active deal. Confirm not stalled.' },
+  { name: 'Maggie Peracchi', team: 'AMER ENT', pipeline: 150000, mqls: 0, campaigns: 'AI Launch SF', flag: 'active', action: 'Lending Club $150K at S2 (Mar 10). Progressing.' },
+  { name: 'Zachary Gould', team: 'AMER ENT', pipeline: 200000, mqls: 1, campaigns: 'CVision Toronto + Twilio Signal', flag: 'followup', action: 'Pet Valu $200K Discovery — 50 days, no S2. Also 1 Twilio Signal MQL. Both need follow-up.' },
+  { name: 'Pratham Shetty', team: 'APJ PSM', pipeline: 505000, mqls: 0, campaigns: 'Bangalore + Tokyo + Twilio', flag: 'urgent', action: 'Owns 5 Bangalore opps + Paytm. Great Learning at BTE. Lenskart and Wakefit at S2. Yatra Twilio deal expired Sep 2025 — resolve.' },
+  { name: 'Kazuki Hirose', team: 'APJ', pipeline: 75000, mqls: 0, campaigns: 'Tokyo Dev X PM Day', flag: 'active', action: 'Toyota and Yayoi both at S2. NEC in Discovery. All progressing.' },
+  { name: 'Fe Hmelar', team: 'AMER ENT', pipeline: 285000, mqls: 2, campaigns: 'AI Launch NYC + Twilio Signal', flag: 'followup', action: 'Indeed $285K Engagement — no S2. 2 Twilio Signal MQLs. Indeed needs push to S2.' },
+  { name: 'Marketo Monster', team: 'System — Unassigned', pipeline: 0, mqls: 12, campaigns: 'Twilio Signal', flag: 'urgent', action: '12+ leads unassigned to human rep. Route via #help-salesops immediately.' },
+  { name: 'Clay Crema', team: 'AMER ENT', pipeline: 150000, mqls: 2, campaigns: 'Twilio (Freshworks)', flag: 'followup', action: 'Follow up Freshworks this week. Engineering call Mar 26. Push to Qualification.' },
+  { name: 'Conrad Sager', team: 'AMER ENT', pipeline: 0, mqls: 5, campaigns: 'Twilio Signal', flag: 'followup', action: '5 MQLs, no pipeline. Confirm SAL acceptance and whether discovery calls held.' },
+  { name: 'Kelly Ward', team: 'AMER ENT', pipeline: 0, mqls: 4, campaigns: 'Twilio Signal', flag: 'followup', action: '4 MQLs, no pipeline visible. Confirm follow-up status.' },
+  { name: 'Arlyn Goldstein', team: 'Velocity AE', pipeline: 0, mqls: 3, campaigns: 'Twilio Signal', flag: 'followup', action: 'Velocity SLA 24hr. 3 MQLs, no pipeline. Check SLA adherence.' },
+  { name: 'Sela Wooldridge', team: 'AMER ENT', pipeline: 0, mqls: 3, campaigns: 'Twilio Signal', flag: 'followup', action: '3 MQLs, no pipeline. Confirm SAL status.' },
+  { name: 'Kyle McDaniel', team: 'AMER ENT', pipeline: 0, mqls: 2, campaigns: 'Twilio Signal', flag: 'monitor', action: '2 MQLs — confirm SAL accepted.' },
+  { name: 'Jack Leiker (SDR)', team: 'SDR', pipeline: 0, mqls: 4, campaigns: 'Twilio Signal', flag: 'followup', action: 'SDR SLA 8hr event MQLs. 4 MQLs — confirm first touch within SLA.' },
+  { name: 'Marketo Monster', team: 'System — Unassigned', pipeline: 0, mqls: 12, campaigns: 'Twilio Signal', flag: 'urgent', action: '12+ leads unassigned. Route via #help-salesops immediately.' },
+  { name: 'Pratham Shetty', team: 'PSM', pipeline: 80000, mqls: 0, campaigns: 'Twilio (Yatra)', flag: 'urgent', action: 'Yatra deal expired Sep 2025. Reconnect or formally close.' },
+  { name: 'Emrah Çetin', team: 'PSM', pipeline: 45000, mqls: 0, campaigns: 'Twilio (FundingPips)', flag: 'monitor', action: 'Trial ongoing, weekly check-ins. Close date Jul 29.' },
+];
+
+function flagColor(f) {
+  if (f === 'urgent') return 'var(--red)';
+  if (f === 'followup') return 'var(--amber)';
+  if (f === 'monitor') return 'var(--blue)';
+  if (f === 'active') return 'var(--green)';
+  return 'var(--text3)';
+}
+
+function flagLabel(f) {
+  if (f === 'urgent') return '<span class="badge b-red">Urgent</span>';
+  if (f === 'followup') return '<span class="badge b-amber">Follow-up needed</span>';
+  if (f === 'monitor') return '<span class="badge b-blue">Monitor</span>';
+  if (f === 'active') return '<span class="badge b-green">Active</span>';
+  if (f === 'mixed') return '<span class="badge b-purple">Mixed</span>';
+  return '<span class="badge b-gray">—</span>';
+}
+
+let UNWORKED_LEADS = [];
+
+async function loadUnworkedLeads() {
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{
+          role: 'user',
+          content: `Run this exact SQL query against Snowflake PROD_GTM.L3_DWH and return ONLY a JSON array, no other text:
+
+SELECT cml.name AS name, al.account_name AS company, cl.name AS campaign, col.mkto_job_function_c AS job_function, col.job_level_c AS job_level, DATEDIFF(DAY, cml.first_responded_date, CURRENT_DATE) AS days_since
+FROM PROD_GTM.L3_DWH.VW_INTEGRATED_FUNNEL_PERFORMANCE ifp
+LEFT JOIN PROD_GTM.L3_DWH.VW_ACCOUNT_LATEST al ON al.account_id = ifp.account_id
+LEFT JOIN PROD_GTM.L3_DWH.VW_CAMPAIGN_LATEST cl ON ifp.campaign_id = cl.id
+LEFT JOIN PROD_GTM.L3_DWH.VW_CAMPAIGN_MEMBER_LATEST cml ON ifp.campaign_member_id = cml.id
+LEFT JOIN PROD_GTM.L3_DWH.VW_CONTACT_LATEST col ON ifp.contact_id = col.contact_id
+WHERE al.gtm_segment_c <> 'Velocity'
+AND cl.name ILIKE '%Partner%'
+AND cl.start_date BETWEEN '2025-01-01' AND CURRENT_DATE
+AND cml.has_responded = TRUE
+AND ifp.mql_date_funnel IS NULL
+AND (cml.created_date IS NULL OR YEAR(cml.created_date) >= 2023)
+ORDER BY cml.first_responded_date DESC NULLS LAST
+LIMIT 200
+
+Return ONLY a JSON array with fields: name, company, campaign, job_function, job_level, days_since`
+        }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content?.filter(b => b.type === 'text').map(b => b.text).join('') || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    UNWORKED_LEADS = parsed;
+    renderUnworkedTable(parsed);
+    const el = document.getElementById('unworked-count');
+    if (el) el.textContent = parsed.length + '+';
+    const meta = document.getElementById('unworked-live-meta');
+    if (meta) meta.textContent = 'Live · ' + parsed.length + ' contacts · Snowflake';
+  } catch(e) {
+    UNWORKED_LEADS = UNWORKED_LEADS_STATIC;
+    renderUnworkedTable(UNWORKED_LEADS_STATIC);
+    const el = document.getElementById('unworked-count');
+    if (el) el.textContent = '100+';
+    const meta = document.getElementById('unworked-live-meta');
+    if (meta) meta.textContent = 'Static data · Apr 16, 2026';
+  }
+}
+
+const UNWORKED_LEADS_STATIC = [
+  { name:'Gaurav Amar', company:'Ping Identity', campaign:'Clippers vs Thunder Suite', job_function:'Product', job_level:'Vice President', days_since:3 },
+  { name:'Vishal Patel', company:'Erewhon', campaign:'Clippers vs Thunder Suite', job_function:'', job_level:'Manager/Sr. Manager', days_since:6 },
+  { name:'Benny Moy', company:'Universal Electronics', campaign:'Clippers vs Thunder Suite', job_function:'Product', job_level:'Director/Head of', days_since:6 },
+  { name:'Joanne Wang', company:'Wayfair', campaign:'CVision Roundtable w/ AWS + Twilio', job_function:'Design/UX', job_level:'Manager/Sr. Manager', days_since:6 },
+  { name:'Amy Burnis', company:'CyberArk', campaign:'CVision Roundtable w/ AWS + Twilio', job_function:'Marketing', job_level:'Manager/Sr. Manager', days_since:6 },
+  { name:'Juan Luis Viola', company:'Trinity Broadcasting Network', campaign:'Clippers vs Thunder Suite', job_function:'', job_level:'Vice President', days_since:7 },
+  { name:'Monish Prabhakar', company:'Gemini', campaign:'Clippers vs Thunder Suite', job_function:'Growth', job_level:'Director/Head of', days_since:9 },
+  { name:'Christopher Dolan', company:'Taco Bell', campaign:'Clippers vs Thunder Suite', job_function:'Growth', job_level:'Director/Head of', days_since:10 },
+  { name:'Jasmine Teer', company:'Roku', campaign:'Clippers vs Thunder Suite', job_function:'Growth', job_level:'Director/Head of', days_since:13 },
+  { name:'Matthew Sutton', company:'Ticketmaster', campaign:'Clippers vs Thunder Suite', job_function:'Data & Analytics', job_level:'Director/Head of', days_since:15 },
+  { name:'Amruth Madey', company:'WaFd Bank', campaign:'CVision Roundtable w/ AWS', job_function:'Product', job_level:'Vice President', days_since:17 },
+  { name:'David Barkovic', company:'Siteimprove', campaign:'CVision Roundtable w/ AWS', job_function:'Product', job_level:'Vice President', days_since:17 },
+  { name:'Drew Gillett', company:'Guild Mortgage', campaign:'CVision Roundtable w/ AWS', job_function:'Marketing', job_level:'Vice President', days_since:17 },
+  { name:'Parul Shorey', company:'HubSpot', campaign:'CVision Roundtable w/ AWS', job_function:'Product', job_level:'Director/Head of', days_since:17 },
+  { name:'Ethan Grey', company:'Paramount Global', campaign:'Clippers vs Thunder Suite', job_function:'Product', job_level:'Vice President', days_since:21 },
+  { name:'Courtney Stone', company:'JustFab', campaign:'ShopTalk Ancillary Dinner', job_function:'Marketing', job_level:'Vice President', days_since:23 },
+  { name:'Josh Jacobs', company:'Mattel', campaign:'GDC Live Ops Symposium', job_function:'Growth', job_level:'Director/Head of', days_since:23 },
+  { name:'Lee Horn', company:'Duolingo', campaign:'GDC Live Ops Symposium', job_function:'Product', job_level:'Director/Head of', days_since:23 },
+  { name:'Daniel Mok', company:'TikTok', campaign:'GDC Live Ops Symposium', job_function:'Design/UX', job_level:'Director/Head of', days_since:23 },
+  { name:'John Kim', company:'2K', campaign:'GDC Live Ops Symposium', job_function:'', job_level:'Vice President', days_since:23 },
+  { name:'Rohit Bharti', company:'HP Inc.', campaign:'CVision Austin with Twilio', job_function:'Growth', job_level:'Vice President', days_since:23 },
+  { name:'Adam Telfer', company:'Scopely', campaign:'GDC Live Ops Symposium', job_function:'Product', job_level:'Vice President', days_since:23 },
+  { name:'Kenneth Gonzalez', company:'Microsoft', campaign:'GDC Live Ops Symposium', job_function:'Product', job_level:'Manager/Sr. Manager', days_since:23 },
+  { name:'Hannah Montovani', company:'Bazaarvoice', campaign:'CVision Austin with Twilio', job_function:'Marketing', job_level:'Manager/Sr. Manager', days_since:23 },
+  { name:'Laura Menken', company:'PNC Bank', campaign:'CVision Austin with Twilio', job_function:'Growth', job_level:'Vice President', days_since:23 },
+  { name:'Noemi Staab', company:'Amazon Web Services', campaign:'GDC Live Ops Symposium', job_function:'', job_level:'President/C-Level', days_since:23 },
+  { name:'Anton Jackson', company:'Databricks', campaign:'GDC Live Ops Symposium', job_function:'', job_level:'President/C-Level', days_since:23 },
+  { name:'Sarah Edmonds', company:'thredUP', campaign:'ShopTalk Ancillary Dinner', job_function:'Marketing', job_level:'Director/Head of', days_since:24 },
+  { name:'Jordan Mishler', company:'VF Corporation', campaign:'ShopTalk Ancillary Dinner', job_function:'', job_level:'Director/Head of', days_since:24 },
+  { name:'Joel Spiro', company:'Rappi', campaign:'LATAM Minders', job_function:'Product', job_level:'Director/Head of', days_since:29 },
+];
+
+function renderUnworkedTable(data) {
+  const tbody = document.getElementById('unworked-tbody');
+  if (!tbody) return;
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px;">No unworked leads found for current filters.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(r => {
+    const isVP = r.job_level && (r.job_level.includes('Vice President') || r.job_level.includes('C-Level') || r.job_level.includes('President'));
+    const isDirPlus = r.job_level && r.job_level.includes('Director');
+    const priority = isVP ? '<span class="badge b-red">VP+ — prioritize</span>' :
+      isDirPlus ? '<span class="badge b-amber">Director+</span>' :
+      '<span class="badge b-gray">Monitor</span>';
+    const urgent = r.days_since > 30;
+    return `<tr style="${urgent ? 'border-left:2px solid var(--amber);' : ''}">
+      <td style="font-weight:500;color:var(--text);">${r.name || '—'}</td>
+      <td style="font-size:11px;color:var(--text2);">${r.company || '—'}</td>
+      <td style="font-size:11px;color:var(--text3);">${r.job_function || '—'}</td>
+      <td style="font-size:11px;color:var(--text3);">${r.job_level || '—'}</td>
+      <td style="font-size:10px;color:var(--text3);max-width:160px;">${(r.campaign||'').replace('2026-\\d{2}-\\d{2}_AMER_Partner_','').replace(/^\d{4}-\d{2}-\d{2}_AMER_Partner_/,'')}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:${urgent?'var(--amber)':'var(--text3)'};">${r.days_since}d</td>
+      <td>${priority}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterUnworkedTable() {
+  const campaign = document.getElementById('unworked-campaign-filter')?.value || 'all';
+  const level = document.getElementById('unworked-level-filter')?.value || 'all';
+  const source = UNWORKED_LEADS.length > 0 ? UNWORKED_LEADS : UNWORKED_LEADS_STATIC;
+  let filtered = source;
+  if (campaign !== 'all') filtered = filtered.filter(r => r.campaign && r.campaign.includes(campaign));
+  if (level !== 'all') filtered = filtered.filter(r => r.job_level && (r.job_level.includes(level) || r.job_level.includes('President/C-Level')));
+  renderUnworkedTable(filtered);
+}
+  const view = document.getElementById('lb-view')?.value || 'campaign';
+  const flagFilter = document.getElementById('lb-flag-filter')?.value || 'all';
+
+  const campaignView = document.getElementById('lb-campaign-view');
+  const aeView = document.getElementById('lb-ae-view');
+
+  if (campaignView) campaignView.style.display = view === 'campaign' ? 'block' : 'none';
+  if (aeView) aeView.style.display = view === 'ae' ? 'block' : 'none';
+
+  if (view === 'campaign') {
+    let campaigns = [...CAMPAIGN_BREAKDOWN];
+    if (flagFilter === 'flagged') campaigns = campaigns.filter(c => c.flag === 'urgent' || c.flag === 'followup' || c.flag === 'mixed');
+    if (flagFilter === 'active') campaigns = campaigns.filter(c => c.totalArr > 0);
+
+    const container = document.getElementById('lb-campaign-cards');
+    if (!container) return;
+
+    container.innerHTML = campaigns.map(c => {
+      const stalledOpps = c.opps.filter(o => o.flag === 'followup' || o.flag === 'urgent');
+      const activeOpps = c.opps.filter(o => o.flag === 'active');
+
+      return `
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <div style="font-weight:500;font-size:14px;color:var(--text);margin-bottom:3px;">${c.name}</div>
+            <div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;">${c.date} &nbsp;·&nbsp; ${c.partner}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            ${flagLabel(c.flag)}
+            <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);font-weight:500;">${c.totalArr > 0 ? fmtArr(c.totalArr) : '—'}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:16px;margin-bottom:14px;padding-bottom:12px;border-bottom:0.5px solid var(--border);">
+          <div style="font-size:11px;color:var(--text3);">
+            <span style="color:var(--green);font-weight:500;">${activeOpps.length}</span> active
+          </div>
+          <div style="font-size:11px;color:var(--text3);">
+            <span style="color:var(--amber);font-weight:500;">${stalledOpps.length}</span> need follow-up
+          </div>
+          <div style="font-size:11px;color:var(--text3);">
+            <span style="font-weight:500;color:var(--text2);">${c.s2Count}</span> at S2+
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;border-bottom:0.5px solid var(--border);">Opportunity</th>
+            <th style="text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;border-bottom:0.5px solid var(--border);">AE / Owner</th>
+            <th style="text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;border-bottom:0.5px solid var(--border);">Stage</th>
+            <th style="text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;border-bottom:0.5px solid var(--border);">ARR</th>
+            <th style="text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;border-bottom:0.5px solid var(--border);">Status</th>
+            <th style="text-align:left;padding:6px 10px;font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;border-bottom:0.5px solid var(--border);">Action needed</th>
+          </tr></thead>
+          <tbody>
+            ${c.opps.map(o => `<tr style="border-left:2px solid ${flagColor(o.flag)};">
+              <td style="padding:8px 10px;border-bottom:0.5px solid var(--border);font-size:12px;font-weight:500;color:var(--text);">${o.opp}</td>
+              <td style="padding:8px 10px;border-bottom:0.5px solid var(--border);font-size:11px;color:${o.ae==='Unassigned'?'var(--red)':'var(--text3)'};">${o.ae}</td>
+              <td style="padding:8px 10px;border-bottom:0.5px solid var(--border);font-size:11px;color:var(--text2);">${o.stage}</td>
+              <td style="padding:8px 10px;border-bottom:0.5px solid var(--border);font-family:'DM Mono',monospace;font-size:11px;font-weight:500;">${o.arr > 0 ? fmtArr(o.arr) : '—'}</td>
+              <td style="padding:8px 10px;border-bottom:0.5px solid var(--border);">${flagLabel(o.flag)}</td>
+              <td style="padding:8px 10px;border-bottom:0.5px solid var(--border);font-size:11px;color:var(--text3);line-height:1.5;max-width:240px;">${o.action}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }).join('');
+
+    const stalled = campaigns.reduce((s,c) => s + c.opps.filter(o => o.flag==='followup'||o.flag==='urgent').length, 0);
+    const zeroPipe = AE_SUMMARY.filter(a => a.pipeline === 0 && a.mqls > 0 && a.name !== 'Marketo Monster').length;
+    const el1 = document.getElementById('lb-stalled');
+    const el2 = document.getElementById('lb-zero-pipe');
+    if (el1) el1.textContent = stalled;
+    if (el2) el2.textContent = zeroPipe;
+
+  } else {
+    let aes = [...AE_SUMMARY];
+    if (flagFilter === 'flagged') aes = aes.filter(a => a.flag === 'urgent' || a.flag === 'followup');
+    if (flagFilter === 'active') aes = aes.filter(a => a.pipeline > 0);
+    aes.sort((a,b) => {
+      const order = {urgent:0,followup:1,monitor:2,active:3};
+      return (order[a.flag]||4) - (order[b.flag]||4);
+    });
+
+    const tbody = document.getElementById('lb-ae-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = aes.map(a => `<tr>
+      <td style="font-weight:500;color:${a.name==='Marketo Monster'?'var(--red)':'var(--text)'};">${a.name}</td>
+      <td style="font-size:11px;color:var(--text3);">${a.team}</td>
+      <td style="font-family:'DM Mono',monospace;font-weight:500;">${a.pipeline > 0 ? fmtArr(a.pipeline) : '—'}</td>
+      <td style="text-align:center;">${a.mqls}</td>
+      <td style="font-size:11px;color:var(--text3);">${a.campaigns}</td>
+      <td>${flagLabel(a.flag)}</td>
+      <td style="font-size:11px;color:var(--text3);line-height:1.5;max-width:220px;">${a.action}</td>
+    </tr>`).join('');
+  }
+}
+
+function init() {
+  document.querySelectorAll('.section').forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active');
+  });
+  const overview = document.getElementById('tab-overview');
+  if (overview) {
+    overview.style.display = 'block';
+    overview.classList.add('active');
+  }
+  document.querySelectorAll('.nav-tab').forEach((t,i) => {
+    t.classList.remove('active');
+    if (i===0) t.classList.add('active');
+  });
+  try { renderAWSTable(AWS_OPPS); } catch(e) { console.error('AWS table error',e); }
+  try { renderTwilioTable(TWILIO_DEALS); } catch(e) { console.error('Twilio table error',e); }
+  try { renderPSM(PSM_DATA); } catch(e) { console.error('PSM error',e); }
+  try { filterPartners(); } catch(e) { console.error('Partners error',e); }
+  try { renderLeaderboard(); } catch(e) { console.error('Leaderboard error',e); }
+  try { loadLiveData(); } catch(e) { console.error('Live data error',e); }
+  try { loadUnworkedLeads(); } catch(e) { console.error('Unworked leads error',e); }
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
