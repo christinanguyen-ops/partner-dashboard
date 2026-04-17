@@ -210,7 +210,7 @@ body {
 .main { padding: 28px; max-width: 1300px; margin: 0 auto; }
 
 .section { display: none; }
-.section.active { display: block !important; }
+.section.active { display: block; }
 
 /* CARDS */
 .card {
@@ -654,7 +654,7 @@ select:hover { border-color: var(--border2); }
   <div class="main">
 
     <!-- OVERVIEW -->
-    <div id="tab-overview" class="section active">
+    <div id="tab-overview" class="section active" style="display:block;">
       <div class="metric-grid">
         <div class="metric-card">
           <div class="m-label">AWS total pipeline FY26</div>
@@ -2369,7 +2369,17 @@ function init() {
   try { loadUnworkedLeads(); } catch(e) { console.error('Unworked leads error',e); }
 }
 
-window.onload = init;
+window.onload = function() {
+  // Always show overview immediately
+  var ov = document.getElementById('tab-overview');
+  if (ov) { ov.style.display = 'block'; ov.classList.add('active'); }
+  // Then try full init
+  try { init(); } catch(e) {
+    console.error('Init error:', e);
+    // Still show overview even if init fails
+    if (ov) { ov.style.display = 'block'; }
+  }
+};
 </script>
 </body>
 </html>
